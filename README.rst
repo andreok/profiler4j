@@ -1,5 +1,5 @@
 This project is a fork of the official Profiler4j project by Antonio S. R. Gomes.
-You can find it at sourceforge: `http://profiler4j.sourceforge.net/ http://profiler4j.sourceforge.net/`_
+You can find it at sourceforge: `http://profiler4j.sourceforge.net/`_
 
 I've created this fork to add one or two features, such as:
 
