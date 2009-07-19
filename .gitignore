@@ -1,4 +1,5 @@
-CVS/**/*
+CVS
+**/CVS
 target
 .externalToolBuilders/
 lib
