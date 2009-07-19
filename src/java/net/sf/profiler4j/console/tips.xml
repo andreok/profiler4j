@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<tip-collection>
+   <tip>
+<![CDATA[<h1>Improve your Profiling Session</h1>
+Define profiling rules <b>as restrictive as possible</b> as this can improve the accuracy of
+your measurements and impose less overhead. As a simple rule of thumb, leave only those
+ACCEPT rules that refer to your application classes and, at the end of the list, put a 
+REJECT on <tt>*(*)</tt>.
+<p>
+Remember that you can always change your mind and write new rules that can be 
+<b>activated without restarting</b> your application.
+]]>
+   </tip>
+   <tip>
+<![CDATA[<h1>Profiler4j in Application Servers</h1>
+Profiler4j can be used to profile applications running in JBoss and Tomcat. See our
+FAQs for details.
+]]>
+   </tip>
+   <tip>
+<![CDATA[<h1>Need Help?</h1>
+If you find any problems or have questions not yet addressed don't hesitate to contact
+us. Visit the support forum (hosted by sourceforge). Also, let us know if Profiler4j
+was useful to you and help us to improve it.
+]]>
+   </tip>
+</tip-collection>

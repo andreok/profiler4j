@@ -1,0 +1,5 @@
+CVS/**/*
+target
+.externalToolBuilders/
+lib
+doc
