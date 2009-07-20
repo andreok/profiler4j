@@ -1,5 +1,6 @@
 /*
  * Copyright 2006 Antonio S. R. Gomes
+ * Copyright 2009 Murat Knecht
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at
@@ -410,7 +411,7 @@ public class CallGraphPanel extends HoverablePanel {
         }
         ixMax = Math.max(ixMax, ix);
     }
-
+    
     public void applyNCut(int n) {
         // System.out.println("NCUT(" + n + ")");
         List<MethodView> aux = new ArrayList<MethodView>(nodes.values());
@@ -418,7 +419,7 @@ public class CallGraphPanel extends HoverablePanel {
         int ncut = n;
         for (MethodView node : aux) {
             ncut--;
-            node.visible = ncut >= 0;
+            node.visible = (ncut >= 0);
             // dumpNode(node);
         }
         if (selectedNode != null && !selectedNode.visible) {

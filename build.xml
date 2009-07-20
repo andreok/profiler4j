@@ -16,7 +16,7 @@
 
 <project name="profiler4j" default="build" basedir=".">
 
-    <property name="version" value="1.0-beta3" />
+    <property name="version" value="1.0-beta3-fork" />
     <property name="name" value="profiler4j" />
 
     <property name="asmlib" value="lib/asm-all-3.0_RC1.jar" />

@@ -1,5 +1,6 @@
 /*
  * Copyright 2006 Antonio S. R. Gomes
+ * Copyright 2009 Murat Knecht
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at
@@ -19,6 +20,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.io.File;
+import java.rmi.server.ExportException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -46,6 +48,8 @@ import net.sf.profiler4j.agent.AgentConstants;
 import net.sf.profiler4j.console.TreeBuilder.NodeInfo;
 import net.sf.profiler4j.console.client.ClientException;
 import net.sf.profiler4j.console.client.Snapshot;
+import net.sf.profiler4j.console.util.export.ImageFileWriter;
+import net.sf.profiler4j.console.util.export.ToPng;
 
 public class MainFrame extends JFrame implements AppEventListener {
 
@@ -62,6 +66,7 @@ public class MainFrame extends JFrame implements AppEventListener {
     private JMenuBar jJMenuBar = null;
     private JMenu fileMenu = null;
     private JMenuItem openMenuItem = null;
+    private JMenuItem exportCallGraphMenuItem = null;
 
     private FileFilter fileFilter = new FileFilter() {
         @Override
@@ -197,6 +202,7 @@ public class MainFrame extends JFrame implements AppEventListener {
             fileMenu.setText("File");
             fileMenu.add(getOpenMenuItem());
             fileMenu.add(getOptionsMenuItem());
+            fileMenu.add(getExportCallgraphMenuItem());
             fileMenu.add(getExitMenuItem());
         }
         return fileMenu;
@@ -220,6 +226,26 @@ public class MainFrame extends JFrame implements AppEventListener {
             });
         }
         return openMenuItem;
+    }
+
+    /**
+     * This method initializes openMenuItem
+     * 
+     * @return javax.swing.JMenuItem
+     */
+    private JMenuItem getExportCallgraphMenuItem() {
+        if (exportCallGraphMenuItem == null) {
+            exportCallGraphMenuItem = new JMenuItem();
+            exportCallGraphMenuItem.setText("Export call graph...");
+            exportCallGraphMenuItem.setEnabled(true);
+            exportCallGraphMenuItem.setVisible(true);
+            exportCallGraphMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    exportCallGraph();
+                }
+            });
+        }
+        return exportCallGraphMenuItem;
     }
 
     /**
@@ -683,6 +709,12 @@ public class MainFrame extends JFrame implements AppEventListener {
             }
         }
     }
+    
+    private void exportCallGraph() {
+        
+        ImageFileWriter writer = new ImageFileWriter();
+        writer.writeFile(callGraphPanel, new ToPng(), "hello.png");
+    }
 
     private void viewDetail(NodeInfo info) {
         StringBuilder out = new StringBuilder();
@@ -973,7 +1005,7 @@ public class MainFrame extends JFrame implements AppEventListener {
     private JMenuItem getOptionsMenuItem() {
         if (optionsMenuItem == null) {
             optionsMenuItem = new JMenuItem();
-            optionsMenuItem.setEnabled(false);
+            optionsMenuItem.setEnabled(true);
             optionsMenuItem.setText("Options...");
             optionsMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
