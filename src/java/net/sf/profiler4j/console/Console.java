@@ -562,6 +562,7 @@ public class Console {
         System.out.println("| Profiler4j Console "
                 + String.format("%-36s", AgentConstants.VERSION) + "|");
         System.out.println("| Copyright 2006 Antonio S. R. Gomes                     |");
+        System.out.println("| Copyright 2009 Murat Knecht                            |");
         System.out.println("| See LICENSE-2.0.txt for details                        |");
         System.out.println("+--------------------------------------------------------+");
 

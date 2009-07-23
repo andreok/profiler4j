@@ -15,30 +15,27 @@
  */
 package net.sf.profiler4j.console.util.export;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.Validate;
 
 public class ImageFileWriter {
     
-    public void writeFile(JPanel panel, ToImageConverter creator, String filename) {
+    public void writeFile(JPanel panel, ToImageConverter creator, File exportFile) throws IOException{
         Validate.notNull(panel);
         Validate.notNull(creator);
-        Validate.notEmpty(filename);
+        Validate.notNull(exportFile);
         
         byte[] imageBytes = creator.export(panel);
-        
-        try {
-            FileOutputStream fos = new FileOutputStream(filename);
-            fos.write(imageBytes);
-            fos.close();
-            }
-            catch(Exception e) {
-                System.out.println(e);
-            }
-        
+                FileOutputStream fos = new FileOutputStream(exportFile);
+                fos.write(imageBytes);
+                fos.close();
     }
     
 }

@@ -20,6 +20,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.IOException;
 import java.rmi.server.ExportException;
 
 import javax.swing.BorderFactory;
@@ -40,6 +41,7 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -65,6 +67,7 @@ public class MainFrame extends JFrame implements AppEventListener {
     private JButton resetButton = null;
     private JMenuBar jJMenuBar = null;
     private JMenu fileMenu = null;
+    private JMenu exportMenu = null;
     private JMenuItem openMenuItem = null;
     private JMenuItem exportCallGraphMenuItem = null;
 
@@ -77,6 +80,21 @@ public class MainFrame extends JFrame implements AppEventListener {
         @Override
         public String getDescription() {
             return "Profiler4j Snapshots (*-profiler4j.ser)";
+        }
+    };
+
+    private FileFilter imageExportFilter = new FileFilter() {
+        @Override
+        public boolean accept(File f) {
+            return f.isDirectory()
+                || !f.exists()
+                && (   f.getName().endsWith(".png")
+                   );
+        }
+
+        @Override
+        public String getDescription() {
+            return "PNG Image (.png)";
         }
     };
 
@@ -186,6 +204,7 @@ public class MainFrame extends JFrame implements AppEventListener {
         if (jJMenuBar == null) {
             jJMenuBar = new JMenuBar();
             jJMenuBar.add(getFileMenu());
+            jJMenuBar.add(getExportMenu());
             jJMenuBar.add(getHelpMenu());
         }
         return jJMenuBar;
@@ -202,7 +221,6 @@ public class MainFrame extends JFrame implements AppEventListener {
             fileMenu.setText("File");
             fileMenu.add(getOpenMenuItem());
             fileMenu.add(getOptionsMenuItem());
-            fileMenu.add(getExportCallgraphMenuItem());
             fileMenu.add(getExitMenuItem());
         }
         return fileMenu;
@@ -229,6 +247,20 @@ public class MainFrame extends JFrame implements AppEventListener {
     }
 
     /**
+     * This method initializes exportMenu
+     * 
+     * @return javax.swing.JMenu
+     */
+    private JMenu getExportMenu() {
+        if (exportMenu == null) {
+            exportMenu = new JMenu();
+            exportMenu.setText("Export");
+            exportMenu.add(getExportCallgraphMenuItem());
+        }
+        return exportMenu;
+    }
+
+    /**
      * This method initializes openMenuItem
      * 
      * @return javax.swing.JMenuItem
@@ -236,16 +268,42 @@ public class MainFrame extends JFrame implements AppEventListener {
     private JMenuItem getExportCallgraphMenuItem() {
         if (exportCallGraphMenuItem == null) {
             exportCallGraphMenuItem = new JMenuItem();
-            exportCallGraphMenuItem.setText("Export call graph...");
+            exportCallGraphMenuItem.setText("Call graph...");
             exportCallGraphMenuItem.setEnabled(true);
             exportCallGraphMenuItem.setVisible(true);
             exportCallGraphMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
-                    exportCallGraph();
+                    File imageFile = getImageFileFromUser();
+                    if (null == imageFile) {
+                        // User has aborted, do nothing.
+                        return;
+                    }
+                    
+                    try {
+                        exportCallGraph(imageFile);
+                    } catch(IOException exc) {
+                        JOptionPane.showMessageDialog(MainFrame.this, "Failed exporting the callgraph: " + exc.getMessage());
+                    }
                 }
             });
         }
         return exportCallGraphMenuItem;
+    }
+    
+    private File getImageFileFromUser() {
+        String dir = lastDir;
+        JFileChooser fc = new JFileChooser(dir);
+        fc.setFileFilter(imageExportFilter);
+        
+        if (JFileChooser.APPROVE_OPTION != fc.showSaveDialog(MainFrame.this)) {
+            // user pressed cancel
+            return null;
+        }
+        
+        File imageFile = fc.getSelectedFile();
+        lastDir = imageFile.getParent();
+        
+        return imageFile;
     }
 
     /**
@@ -710,10 +768,10 @@ public class MainFrame extends JFrame implements AppEventListener {
         }
     }
     
-    private void exportCallGraph() {
+    private void exportCallGraph(File imageFile) throws IOException {
         
         ImageFileWriter writer = new ImageFileWriter();
-        writer.writeFile(callGraphPanel, new ToPng(), "hello.png");
+        writer.writeFile(callGraphPanel, new ToPng(), imageFile);
     }
 
     private void viewDetail(NodeInfo info) {

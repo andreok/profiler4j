@@ -1,5 +1,6 @@
 /*
  * Copyright 2006 Antonio S. R. Gomes
+ * Copyright 2009 Murat Knecht
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at
@@ -14,7 +15,7 @@
 package net.sf.profiler4j.console;
 
 /**
- * CLASS_COMMENT
+ * A pattern to select or dismiss classes for profiling. 
  * 
  * @author Antonio S. R. Gomes
  */

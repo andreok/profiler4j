@@ -1,5 +1,6 @@
 /*
  * Copyright 2006 Antonio S. R. Gomes
+ * Copyright 2009 Murat Knecht
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at
@@ -20,7 +21,7 @@ package net.sf.profiler4j.agent;
  */
 public class AgentConstants {
 
-    public static final String VERSION = "1.0-beta3-SNAPSHOT (build 36)";
+    public static final String VERSION = "1.0-beta3-FORK (build 1)";
     
     public static final int CMD_GC = 1;
     public static final int CMD_SNAPSHOT = 2;

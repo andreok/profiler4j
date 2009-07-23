@@ -16,6 +16,7 @@ package net.sf.profiler4j.console;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -40,10 +41,17 @@ import java.awt.Insets;
 import javax.swing.JCheckBox;
 import javax.swing.BorderFactory;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.event.ComponentEvent;
+
 import javax.swing.JToolBar;
 import javax.swing.ImageIcon;
+
+import org.apache.commons.lang.SystemUtils;
 
 import net.sf.profiler4j.console.util.Validator;
 
@@ -54,9 +62,17 @@ public class ProjectDialog extends JDialog {
     private JButton okButton = null;
     private JButton cancelButton = null;
     private JPanel jPanel1 = null;
+    private JPanel exportPanel = null;
+    private JPanel exportActivationPanel = null;
+    private JPanel exportPatternPanel = null;
+    private JCheckBox exportCheckBox = null;
     private Validator validator = new Validator(this);
     private Console app;
 
+    private JTextField exportPatternText = null;
+
+    private final static String DEFAULT_EXPORT_PATTERN = SystemUtils.getUserHome() + SystemUtils.FILE_SEPARATOR + "profiler4j_%i.png"; 
+    
     public ProjectDialog(JFrame owner, Console app) {
         super(owner);
         this.app = app;
@@ -67,7 +83,7 @@ public class ProjectDialog extends JDialog {
      * This method initializes this
      */
     private void initialize() {
-        this.setSize(712, 549);
+        this.setSize(712, 600);
         this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         this.setModal(true);
         this.setResizable(false);
@@ -168,7 +184,7 @@ public class ProjectDialog extends JDialog {
     private JPanel defaultOptionsPanel = null;
     private JLabel jLabel = null;
     private JCheckBox beanpropsCheckBox = null;
-    private JPanel jPanel2 = null;
+    private JPanel rulesPanel = null;
     private JToolBar toolBar = null;
     private JButton addRuleButton = null;
     private JButton removeRuleButton = null;
@@ -192,11 +208,11 @@ public class ProjectDialog extends JDialog {
     RuleTableModel ruleTableModel = new RuleTableModel(); // @jve:decl-index=0:visual-constraint="861,7"
     private JPanel jPanel3 = null;
     private InfoPanel infoPanel = null;
-    private JPanel jPanel4 = null;
-    private JLabel jLabel1 = null;
+    private JPanel connectionPanel = null;
+    private JLabel hostLabel = null;
     private JTextField hostTextField = null;
     private JTextField portTextField = null;
-    private JLabel jLabel2 = null;
+    private JLabel portLabel = null;
 
     /**
      * This method initializes rulesTable
@@ -322,12 +338,12 @@ public class ProjectDialog extends JDialog {
      * 
      * @return javax.swing.JPanel
      */
-    private JPanel getJPanel2() {
-        if (jPanel2 == null) {
-            jPanel2 = new JPanel();
-            jPanel2.setLayout(new BorderLayout());
-            jPanel2.setBounds(new java.awt.Rectangle(7, 165, 691, 311));
-            jPanel2
+    private JPanel getRulesPanel() {
+        if (rulesPanel == null) {
+            rulesPanel = new JPanel();
+            rulesPanel.setLayout(new BorderLayout());
+            rulesPanel.setBounds(new java.awt.Rectangle(7, 165, 691, 211));
+            rulesPanel
                 .setBorder(javax.swing.BorderFactory
                     .createTitledBorder(null,
                                         "Method Rules (evaluated top-down)",
@@ -336,10 +352,10 @@ public class ProjectDialog extends JDialog {
                                         new java.awt.Font("Tahoma", java.awt.Font.PLAIN,
                                                 11),
                                         new java.awt.Color(0, 70, 213)));
-            jPanel2.add(getTableScrollPane(), BorderLayout.CENTER);
-            jPanel2.add(getToolBar(), BorderLayout.NORTH);
+            rulesPanel.add(getTableScrollPane(), BorderLayout.CENTER);
+            rulesPanel.add(getToolBar(), BorderLayout.NORTH);
         }
-        return jPanel2;
+        return rulesPanel;
     }
 
     /**
@@ -450,6 +466,89 @@ public class ProjectDialog extends JDialog {
     }
 
     /**
+     * This method initializes exportPanel, which shows the options
+     * to enable the automatic export of the call graph to an imagefile.
+     * 
+     * @return javax.swing.JPanel
+     */
+    private JPanel getExportPanel() {
+        if (exportPanel == null) {
+            exportPanel = new JPanel();
+            exportPanel.setLayout(new BoxLayout(exportPanel, BoxLayout.Y_AXIS));
+            exportPanel.setBounds(new java.awt.Rectangle(7, 
+                                                         390,
+                                                         691, 
+                                                         101));
+            System.out.println(exportPanel.getBounds());
+            exportPanel
+                .setBorder(javax.swing.BorderFactory
+                    .createTitledBorder(null,
+                                        "Automatic Export",
+                                        javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+                                        javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                                        new java.awt.Font("Tahoma", java.awt.Font.PLAIN,
+                                                11),
+                                        new java.awt.Color(0, 70, 213)));
+            exportPanel.add(getExportActivationPanel());
+            exportPanel.add(getExportPatternPanel());
+        }
+        return exportPanel;
+    }
+    
+    private JPanel getExportActivationPanel() {
+        if (exportActivationPanel == null) {
+            exportActivationPanel = new JPanel();
+            exportActivationPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+            exportActivationPanel.setBounds(new java.awt.Rectangle(7, 
+                                                         490,
+                                                         691, 
+                                                         111));
+            exportActivationPanel.add(getExportCheckBox());
+        }
+        return exportActivationPanel;
+    }
+    
+    JCheckBox getExportCheckBox() {
+        if (null == exportCheckBox) {
+            exportCheckBox = new JCheckBox();
+            exportCheckBox.setSelected(false);
+            exportCheckBox.setText("Export call graph on each snapshot");
+            exportCheckBox.addChangeListener(new ChangeListener() {
+                
+                public void stateChanged(ChangeEvent e) {
+                    exportPatternText.setEnabled(exportCheckBox.isSelected());
+                }
+            });
+        }
+        return exportCheckBox;
+    }
+    
+    private JPanel getExportPatternPanel() {
+        if (exportPatternPanel == null) {
+            exportPatternPanel = new JPanel();
+            exportPatternPanel.setLayout(new BoxLayout(exportPatternPanel,BoxLayout.Y_AXIS));
+            exportPatternPanel.setBounds(new java.awt.Rectangle(
+                                                         7, 
+                                                         490,
+                                                         691, 
+                                                         50));
+            exportPatternPanel.add(new JLabel("Specify a pattern for the image files to be named."));
+            exportPatternPanel.add(getExportPatternText());
+        }
+        return exportPatternPanel;
+    }
+    
+    JTextField getExportPatternText() {
+        if (null == exportPatternText) {
+            
+            exportPatternText = new JTextField(DEFAULT_EXPORT_PATTERN);
+            exportPatternText.setBounds(new Rectangle(7,510,691, 40));
+            exportPatternText.setEnabled(false);
+        }
+        return exportPatternText;
+    }
+
+    /**
      * This method initializes jPanel3
      * 
      * @return javax.swing.JPanel
@@ -458,11 +557,12 @@ public class ProjectDialog extends JDialog {
         if (jPanel3 == null) {
             jPanel3 = new JPanel();
             jPanel3.setLayout(null);
-            jPanel3.setBounds(new java.awt.Rectangle(0, 0, 706, 481));
+            jPanel3.setBounds(new java.awt.Rectangle(0, 0, 706, 581));
             jPanel3.add(getDefaultOptionsPanel(), null);
-            jPanel3.add(getJPanel2(), null);
-            jPanel3.add(getInfoPanel(), null);
-            jPanel3.add(getJPanel4(), null);
+            jPanel3.add(getRulesPanel(), null);
+            jPanel3.add(getHeadingPanel(), null);
+            jPanel3.add(getConnectionPanel(), null);
+            jPanel3.add(getExportPanel(), null);
         }
         return jPanel3;
     }
@@ -472,7 +572,7 @@ public class ProjectDialog extends JDialog {
      * 
      * @return net.sf.profiler4j.console.InfoPanel
      */
-    private InfoPanel getInfoPanel() {
+    private InfoPanel getHeadingPanel() {
         if (infoPanel == null) {
             infoPanel = new InfoPanel();
             infoPanel.setTitle("Bytecode Instrumentation Rules");
@@ -488,18 +588,18 @@ public class ProjectDialog extends JDialog {
      * 
      * @return javax.swing.JPanel
      */
-    private JPanel getJPanel4() {
-        if (jPanel4 == null) {
-            jLabel2 = new JLabel();
-            jLabel2.setBounds(new java.awt.Rectangle(16, 64, 49, 17));
-            jLabel2.setText("Port");
-            jLabel1 = new JLabel();
-            jLabel1.setText("Host");
-            jLabel1.setBounds(new java.awt.Rectangle(16, 32, 49, 17));
-            jPanel4 = new JPanel();
-            jPanel4.setLayout(null);
-            jPanel4.setBounds(new java.awt.Rectangle(16, 56, 385, 103));
-            jPanel4
+    private JPanel getConnectionPanel() {
+        if (connectionPanel == null) {
+            portLabel = new JLabel();
+            portLabel.setBounds(new java.awt.Rectangle(16, 64, 49, 17));
+            portLabel.setText("Port");
+            hostLabel = new JLabel();
+            hostLabel.setText("Host");
+            hostLabel.setBounds(new java.awt.Rectangle(16, 32, 49, 17));
+            connectionPanel = new JPanel();
+            connectionPanel.setLayout(null);
+            connectionPanel.setBounds(new java.awt.Rectangle(16, 56, 385, 103));
+            connectionPanel
                 .setBorder(javax.swing.BorderFactory
                     .createTitledBorder(null,
                                         "Remote JVM",
@@ -507,12 +607,12 @@ public class ProjectDialog extends JDialog {
                                         javax.swing.border.TitledBorder.DEFAULT_POSITION,
                                         null,
                                         null));
-            jPanel4.add(jLabel1, null);
-            jPanel4.add(getHostTextField(), null);
-            jPanel4.add(getPortTextField(), null);
-            jPanel4.add(jLabel2, null);
+            connectionPanel.add(hostLabel, null);
+            connectionPanel.add(getHostTextField(), null);
+            connectionPanel.add(getPortTextField(), null);
+            connectionPanel.add(portLabel, null);
         }
-        return jPanel4;
+        return connectionPanel;
     }
 
     /**
@@ -523,7 +623,7 @@ public class ProjectDialog extends JDialog {
     private JTextField getHostTextField() {
         if (hostTextField == null) {
             hostTextField = new JTextField();
-            hostTextField.setBounds(new java.awt.Rectangle(64, 32, 297, 19));
+            hostTextField.setBounds(new java.awt.Rectangle(64, 37, 297, 19));
             validator.newNonEmpty(hostTextField);
         }
         return hostTextField;
