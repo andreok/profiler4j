@@ -1,5 +1,6 @@
 /*
  * Copyright 2006 Antonio S. R. Gomes
+ * Copyright 2009 Murat Knecht
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at
@@ -152,7 +153,7 @@ public class LongTaskExecutorDialog extends JDialog {
                 } catch (final Throwable e) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            log.error("Caugh task error", e);
+                            log.error("Caught task error", e);
                             error = e;
                         };
                     });

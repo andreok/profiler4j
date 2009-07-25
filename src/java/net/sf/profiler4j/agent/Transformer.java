@@ -117,7 +117,7 @@ public class Transformer implements ClassFileTransformer {
         // crashes, stack overflows, cyclic dependencies, etc.). Only remove one of these
         // if you are really sure.
         // 
-        // You´ve been warned, that is, _DON´T EMAIL ME ASKING FOR HELP_
+        // You've been warned, that is, _DON'T EMAIL ME ASKING FOR HELP_
         //
         if (className.startsWith("[")
                 // Packages org.objectweb.asm.** are repackaged to be under
@@ -127,7 +127,7 @@ public class Transformer implements ClassFileTransformer {
                 // These cause recursive calls through the profiler. Some of these can be
                 // avoided (java.util) with some tweaks in the class ThreadProfiler. The
                 // others are much more complex and would be viable only with a profiler
-                // written entirely in native code. However, they don´t seem that
+                // written entirely in native code. However, they don't seem that
                 // important anyway.
                 || className.startsWith("java.util.")
                 || className.startsWith("java.lang.")

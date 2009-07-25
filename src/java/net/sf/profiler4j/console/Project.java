@@ -1,5 +1,6 @@
 /*
  * Copyright 2006 Antonio S. R. Gomes
+ * Copyright 2009 Murat Knecht
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at
@@ -24,18 +25,27 @@ import java.util.List;
  */
 public class Project {
 
+    /** Specifies that test classes from the profiler4j project are to be instrumented and profiled. */
+    private static final Rule RULE__ACCEPT_PROFILER4J_TEST_CLASSES = new Rule("net.sf.profiler4j.test.*(*)", Rule.Action.ACCEPT);
+
     private boolean changed;
 
     private File file;
-    private String name = "Sample Profiling Project";
     private String hostname = "localhost";
     private int port = 7890;
     private boolean beanprops = true;
     private Rule.AccessOption access = Rule.AccessOption.PRIVATE;
 
     private List<Rule> rules = new ArrayList<Rule>();
+    
+    private boolean exportAutomaticallyEnabled = false;
+    
+    /** The image filename pattern for exporting purposes. */
+    private String exportPattern = null;
 
     public Project() {
+        // Set default rules
+        
         // rules.add(new Rule("org.apache.*(*)", Rule.Action.REJECT));
         // rules.add(new Rule("org.jboss.*(*)", Rule.Action.REJECT));
         // rules.add(new Rule("net.sf.jasperreports.*(*)", Rule.Action.REJECT));
@@ -45,7 +55,7 @@ public class Project {
         // rules.add(new Rule("org.hsqldb.*(*)", Rule.Action.REJECT));
         //rules.add(new Rule("*(*)", Rule.Action.REJECT));
         
-        rules.add(new Rule("net.sf.profiler4j.test.*(*)", Rule.Action.ACCEPT));
+        rules.add(RULE__ACCEPT_PROFILER4J_TEST_CLASSES);
     }
 
     public String getHostname() {
@@ -119,6 +129,56 @@ public class Project {
                     + "; ");
         }
         return out.toString();
+    }
+
+    /**
+     * Sets the pattern from which a name for export images is to be derived.
+     * <p>
+     * The value may be {@code null} or otherwise invalid, since there is no chance
+     * to check the pattern for usefulness when it is specified. (I.e. there may
+     * be no write-access to the directory anymore, when exporting begins.)
+     * <p>
+     * Note that the pattern only is used, if {@link #isExportAutomaticallyEnabled()} return {@code true}.
+     * 
+     * @param exportPattern the filename pattern to set, may be {@code null}
+     */
+    public void setExportPattern(String exportPattern) {
+        this.exportPattern = exportPattern;
+    }
+
+    /**
+     * Gets the pattern from which a name for export images is to be derived.
+     * <p>
+     * May be {@code null} or otherwise invalid, see {@link #setExportPattern(String)}.
+     * <p>
+     * Note that the pattern only is used, if {@link #isExportAutomaticallyEnabled()} return {@code true}.
+     * 
+     * @return the currently used filename pattern
+     */
+    public String getExportPattern() {
+        return exportPattern;
+    }
+
+    /**
+     * Determine, if the call graph is to be exported automatically after each snapshot.
+     * 
+     * @param exportAutomaticallyEnabled 
+     * 
+     * @see #setExportPattern(String)
+     */
+    public void setExportAutomaticallyEnabled(boolean exportAutomaticallyEnabled) {
+        this.exportAutomaticallyEnabled = exportAutomaticallyEnabled;
+    }
+
+    /**
+     * Determine, if the call graph is to be exported automatically after each snapshot.
+     *
+     * @return the exportAutomaticallyEnabled
+     * 
+     * @see #getExportPattern()
+     */
+    public boolean isExportAutomaticallyEnabled() {
+        return exportAutomaticallyEnabled;
     }
 
 }

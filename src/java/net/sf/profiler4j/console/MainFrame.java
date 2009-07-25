@@ -280,7 +280,7 @@ public class MainFrame extends JFrame implements AppEventListener {
                     }
                     
                     try {
-                        exportCallGraph(imageFile);
+                        new ImageFileWriter().writeFile(callGraphPanel, new ToPng(), imageFile);
                     } catch(IOException exc) {
                         JOptionPane.showMessageDialog(MainFrame.this, "Failed exporting the callgraph: " + exc.getMessage());
                     }
@@ -643,7 +643,7 @@ public class MainFrame extends JFrame implements AppEventListener {
      * 
      * @return net.sf.profiler4j.ui.CallGraphPanel
      */
-    private CallGraphPanel getCallGraphPanel() {
+    public CallGraphPanel getCallGraphPanel() {
         if (callGraphPanel == null) {
             callGraphPanel = new CallGraphPanel();
             callGraphPanel.setBorder(null);
@@ -768,12 +768,6 @@ public class MainFrame extends JFrame implements AppEventListener {
         }
     }
     
-    private void exportCallGraph(File imageFile) throws IOException {
-        
-        ImageFileWriter writer = new ImageFileWriter();
-        writer.writeFile(callGraphPanel, new ToPng(), imageFile);
-    }
-
     private void viewDetail(NodeInfo info) {
         StringBuilder out = new StringBuilder();
         if (info != null) {

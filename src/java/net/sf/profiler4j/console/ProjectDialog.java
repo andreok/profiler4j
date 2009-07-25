@@ -47,6 +47,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JToolBar;
 import javax.swing.ImageIcon;
@@ -544,6 +546,20 @@ public class ProjectDialog extends JDialog {
             exportPatternText = new JTextField(DEFAULT_EXPORT_PATTERN);
             exportPatternText.setBounds(new Rectangle(7,510,691, 40));
             exportPatternText.setEnabled(false);
+            exportPatternText.addKeyListener(new KeyListener() {
+                
+                public void keyTyped(KeyEvent e) {
+                    edited = true;
+                }
+                
+                public void keyReleased(KeyEvent e) {
+                    // don't care
+                }
+                
+                public void keyPressed(KeyEvent e) {
+                    // don't care
+                }
+            });
         }
         return exportPatternText;
     }
@@ -670,8 +686,10 @@ public class ProjectDialog extends JDialog {
             for (Rule r : ruleTableModel.getRules()) {
                 p.getRules().add(r);
             }
+            p.setExportAutomaticallyEnabled(exportCheckBox.isSelected());
+            p.setExportPattern(exportPatternText.getText());
         }
-
+        
         return edited;
     }
 
