@@ -23,11 +23,15 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.datatransfer.Clipboard;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.peer.KeyboardFocusManagerPeer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,6 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.swing.TransferHandler;
 
 import net.sf.profiler4j.console.client.Snapshot;
 import net.sf.profiler4j.console.client.Snapshot.Method;
@@ -464,7 +470,7 @@ public class CallGraphPanel extends HoverablePanel {
             }
         }
     }
-
+    
     private static int k = 70;
 
 }
@@ -616,5 +622,4 @@ class LinkView {
     private static Point2D.Double midPoint(Point2D.Double p1, Point2D.Double p2) {
         return new Point2D.Double((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
     }
-
 }

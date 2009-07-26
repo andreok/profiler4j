@@ -18,12 +18,20 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.server.ExportException;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -40,6 +48,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -51,6 +60,7 @@ import net.sf.profiler4j.console.TreeBuilder.NodeInfo;
 import net.sf.profiler4j.console.client.ClientException;
 import net.sf.profiler4j.console.client.Snapshot;
 import net.sf.profiler4j.console.util.export.ImageFileWriter;
+import net.sf.profiler4j.console.util.export.ImageTransferable;
 import net.sf.profiler4j.console.util.export.ToPng;
 
 public class MainFrame extends JFrame implements AppEventListener {
@@ -65,6 +75,7 @@ public class MainFrame extends JFrame implements AppEventListener {
     private JButton connectButton = null;
     private JButton snapshotButton = null;
     private JButton resetButton = null;
+    private JButton copyToClipboardButton = null;
     private JMenuBar jJMenuBar = null;
     private JMenu fileMenu = null;
     private JMenu exportMenu = null;
@@ -116,7 +127,7 @@ public class MainFrame extends JFrame implements AppEventListener {
         this.setJMenuBar(getJJMenuBar());
         this.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         this.setContentPane(getJContentPane());
-        this.setTitle("Profiler4j Console " + AgentConstants.VERSION);
+        this.setTitle("Profiler4j-Fork Console " + AgentConstants.VERSION);
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent e) {
 
@@ -164,8 +175,8 @@ public class MainFrame extends JFrame implements AppEventListener {
     private JPanel callTreePanel = null;
     private JPanel callGraphTabPanel = null;
     private CallGraphPanel callGraphPanel = null;
-    private JScrollPane jScrollPane = null;
-    private JPanel jPanel1 = null;
+    private JScrollPane callGraphScrollPane = null;
+    private JPanel nCutPanel = null;
     private JSlider ncutSlider = null;
     private JButton runGcButton = null;
 
@@ -280,7 +291,7 @@ public class MainFrame extends JFrame implements AppEventListener {
                     }
                     
                     try {
-                        new ImageFileWriter().writeFile(callGraphPanel, new ToPng(), imageFile);
+                        new ImageFileWriter().writeFile(getCallGraphPanel(), new ToPng(), imageFile);
                     } catch(IOException exc) {
                         JOptionPane.showMessageDialog(MainFrame.this, "Failed exporting the callgraph: " + exc.getMessage());
                     }
@@ -632,8 +643,8 @@ public class MainFrame extends JFrame implements AppEventListener {
                                                                                     8,
                                                                                     8,
                                                                                     8));
-            callGraphTabPanel.add(getJScrollPane(), java.awt.BorderLayout.CENTER);
-            callGraphTabPanel.add(getJPanel1(), java.awt.BorderLayout.NORTH);
+            callGraphTabPanel.add(getCallGraphScrollPane(), java.awt.BorderLayout.CENTER);
+            callGraphTabPanel.add(getNCutPanel(), java.awt.BorderLayout.NORTH);
         }
         return callGraphTabPanel;
     }
@@ -656,29 +667,73 @@ public class MainFrame extends JFrame implements AppEventListener {
      * 
      * @return javax.swing.JScrollPane
      */
-    private JScrollPane getJScrollPane() {
-        if (jScrollPane == null) {
-            jScrollPane = new JScrollPane();
-            jScrollPane.setViewportView(getCallGraphPanel());
+    private JScrollPane getCallGraphScrollPane() {
+        if (callGraphScrollPane == null) {
+            callGraphScrollPane = new JScrollPane(getCallGraphPanel());
         }
-        return jScrollPane;
+        return callGraphScrollPane;
+    }
+    
+    /**
+     * Copies the call graph as an image to the clip board.
+     */
+    private void copyCallGraphToClipboard() {
+        // Get the image.
+        
+        Image image = new ToPng().createImage(getCallGraphPanel());
+        ImageTransferable transferable = new ImageTransferable(image);
+        
+        // Get the necessary references to the clip board.
+        Clipboard clipboard = getToolkit().getSystemClipboard();
+        
+        clipboard.setContents(transferable, transferable);
+        
+//        TransferHandler handler = new TransferHandler(null);
+//        
+//        // Do the copying.
+//        handler.exportToClipboard(
+//            getCallGraphPanel(),    // what to copy
+//            clipboard,              // where to copy it
+//            TransferHandler.COPY);  // copy only
     }
 
     /**
-     * This method initializes jPanel1
+     * Returns and creates, if necessary, the button to copy
+     * the call graph to the clip board.
+     */
+    private JButton getCopyToClipboardButton() {
+        if (null == copyToClipboardButton) {
+            copyToClipboardButton = new JButton("Copy");
+            copyToClipboardButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+            copyToClipboardButton.addActionListener(new ActionListener() {
+                
+                public void actionPerformed(ActionEvent arg0) {
+                    try {
+                        copyCallGraphToClipboard();
+                    } catch(Exception e) {
+                        // Failure during copying really should not escalate.
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        return copyToClipboardButton;
+    }
+    
+    /**
+     * This method initializes the panel that holds the n-cut slider
+     * to scale the call graph.
      * 
      * @return javax.swing.JPanel
      */
-    private JPanel getJPanel1() {
-        if (jPanel1 == null) {
-            FlowLayout flowLayout1 = new FlowLayout();
-            flowLayout1.setAlignment(java.awt.FlowLayout.LEFT);
-            jPanel1 = new JPanel();
-            jPanel1.setBorder(null);
-            jPanel1.setLayout(flowLayout1);
-            jPanel1.add(getNcutSlider(), null);
+    private JPanel getNCutPanel() {
+        if (nCutPanel == null) {
+            nCutPanel = new JPanel();
+            nCutPanel.setLayout(new BorderLayout());
+            nCutPanel.add(getNcutSlider(), BorderLayout.WEST);
+            nCutPanel.add(getCopyToClipboardButton(), BorderLayout.EAST);
         }
-        return jPanel1;
+        return nCutPanel;
     }
 
     /**
@@ -697,15 +752,15 @@ public class MainFrame extends JFrame implements AppEventListener {
             ncutSlider.setToolTipText("Number of methods to show");
             ncutSlider.setSnapToTicks(true);
             ncutSlider.setMajorTickSpacing(20);
-            ncutSlider.setPreferredSize(new java.awt.Dimension(200, 42));
+            ncutSlider.setPreferredSize(new java.awt.Dimension(200, 62));
             ncutSlider.setMinimum(10);
             // getNcutTextField().setText(String.valueOf(ncutSlider.getValue()));
             ncutSlider.addChangeListener(new javax.swing.event.ChangeListener() {
                 public void stateChanged(javax.swing.event.ChangeEvent e) {
-                    callGraphPanel.applyNCut(ncutSlider.getValue());
+                    getCallGraphPanel().applyNCut(ncutSlider.getValue());
                     // getNcutTextField().setText(String.valueOf(ncutSlider
                     // .getValue()));
-                    callGraphPanel.repaint();
+                    getCallGraphPanel().repaint();
                 }
             });
         }
@@ -795,7 +850,7 @@ public class MainFrame extends JFrame implements AppEventListener {
 
         } else if (ev.getType() == AppEventType.DISCONNECTED) {
 
-            callGraphPanel.setSnapshot(null);
+            getCallGraphPanel().setSnapshot(null);
             connectButton.setToolTipText("Connect to remote JVM");
             connectButton.setIcon(new ImageIcon(getClass()
                 .getResource("/net/sf/profiler4j/console/images/connect.png")));
@@ -822,8 +877,8 @@ public class MainFrame extends JFrame implements AppEventListener {
         tree.setModel(model);
         tree.setShowsRootHandles(false);
         tree.setCellRenderer(new MethodRenderer());
-        callGraphPanel.setSnapshot(sn);
-        callGraphPanel.applyNCut(ncutSlider.getValue());
+        getCallGraphPanel().setSnapshot(sn);
+        getCallGraphPanel().applyNCut(ncutSlider.getValue());
     }
 
     /**

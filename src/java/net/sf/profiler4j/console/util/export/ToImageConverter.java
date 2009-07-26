@@ -15,8 +15,12 @@
  */
 package net.sf.profiler4j.console.util.export;
 
+import java.awt.Image;
+
 import javax.swing.JPanel;
 
 public interface ToImageConverter {
     public byte[] export(JPanel panel);
+    
+    public Image createImage(JPanel panel);
 }

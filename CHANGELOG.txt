@@ -1,43 +1,13 @@
--- planned    
+1.0-alpha1
+	- NEW: Currently shown call graph may be saved as PNG image via export-menu
+	- NEW: Project setting: After each snapshot, the callgraph is exported automatically.
+	- NEW: The call graph may be copied to clip board. 
 
-    - NEW: Snapshots should describe each thread separately.
-    - NEW: Snapshots should allow incremental updates by sharing constant pools
-    - NEW: Add a thread state monitor in the form of a timeline
-    - NEW: Use atomic variables to decrease monitor contention
-    - NEW: Improve graph layout algorithm.
-    - NEW: Allow the user to hide methods in the call graph view
-    - NEW: Provide some presets for Tomcat and JBoss    
-    - NEW: load the last project when the console starts
-    - NEW: show the connection status and project name in the title
-    - BUG: Fix call tree problems
-    - NEW: allow the user to disable memory and thread monitoring
-    - BUG: improve precision of measurements
-    - NEW: class cache should be aynchronous
-    - NEW: show summary in class list (e.g. number of classes)
-    - NEW: add checkbox "include system threads" to thread list      
-    - NEW: Create tests
-    - NEW: user configurable options in call tree
-    - NEW: show snaphost history
-    - NEW: disable save button when there´s nothing new to save
-    - NEW: Allow the console to save and load snapshots. 
-    - NEW: Add an allocation tracer
-    - NEW: Provide a minimal bundled documentation        
-    - NEW: Add a menu option to check for newer releases
-    - NEW: allow the console to override agent verbosity on-the-fly
-    - NEW: agent should have the option to save locally the log
-    - NEW: agent should be able to send the log to the console
-    - BUG: NoClassDefFoundException when in javac (pretty weird since the refencerd 
-           class does not exist in the libs)
-    - NEW: improve method reloading criteria to take into account the options as well           
-    - NEW: show class count
-    - NEW: paint callboxes instead of simple hover tooltips (cool)
-    - NEW: add summary in the thread panel (combobox?)
-    - NEW: use flexdock    
-    * JOutlookBar
-    
-    * use the work dir as profiler4j-<SERVER_PORT>.tmp
-    * in the class list show classes/interfaces with different icons
-    
+
+I don't think many unreleased features of 1.0-beta3 are included in the HEAD, but kept it for completeness.
+
+---------- FORK
+
 1.0-beta3 (unreleased)
     - BUG: class cache is ambiguous with the boot class loader
     - BUG: Added initial support to BEA JRockit
@@ -71,7 +41,7 @@
 
     - BUG [1505201] Library bootstrap
     - NEW: major refactoring in the console with a new event-driven architecture. Now
-            it´s much more easier to add UI features.
+            itï¿½s much more easier to add UI features.
     - NEW: load/save project settings    
     - NEW: added monitoring for non-heap memory
     - NEW: many UI improvements
