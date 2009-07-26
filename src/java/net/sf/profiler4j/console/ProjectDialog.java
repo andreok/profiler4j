@@ -481,7 +481,6 @@ public class ProjectDialog extends JDialog {
                                                          390,
                                                          691, 
                                                          101));
-            System.out.println(exportPanel.getBounds());
             exportPanel
                 .setBorder(javax.swing.BorderFactory
                     .createTitledBorder(null,

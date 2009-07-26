@@ -97,9 +97,10 @@
         </delete>
         <zip destfile="target/${name}-${version}-src.zip">
             <zipfileset dir="."
-                        includes="**/*.*"
-                        excludes="target/**/*.*,**/Thumbs.db"
-                        prefix="${name}-${version}" />
+                        prefix="${name}-${version}"
+            			includes="**/*.*"
+            			excludes="target/**/*,**/Thumbs.db,**/.gitignore,**/.git/**,README.rst">
+            </zipfileset>
         </zip>
     </target>
 
