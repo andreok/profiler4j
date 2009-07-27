@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
  * This can be used to generate names for continuously numbered files.
  * <p>
  * The pattern is an arbitrary (valid) filename string that must
- * contain precisely one "%i" substring. This is then consecutively
+ * contain at most one "%i" substring. This is then consecutively
  * replaced by up-counting numbers until a filename is produced
  * that does not yet point to an existing file.
  * <p>
@@ -263,7 +263,7 @@ public class FilenameGenerator {
     }
     
     /**
-     * Theoretically a file filter, but in this case is (mis)used to determine
+     * Theoretically a file filter, but is in this case (mis)used to determine
      * the highest number in use. This is done to avoid iterating all files twice.
      * 
      * @author murat

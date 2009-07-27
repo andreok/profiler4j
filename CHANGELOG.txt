@@ -3,6 +3,7 @@
 	- NEW: Project setting: After each snapshot, the callgraph is exported automatically.
 	- NEW: The call graph may be copied to clip board. 
 	- BUG: Tiny UI Changes 
+	- NEW: Enabled PNG compression.
 
 
 I don't think many unreleased features of 1.0-beta3 are included in the HEAD, but kept it for completeness.

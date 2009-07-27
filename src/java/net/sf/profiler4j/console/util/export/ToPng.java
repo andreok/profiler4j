@@ -24,7 +24,7 @@ import javax.swing.JPanel;
 import com.keypoint.PngEncoder;
 
 /**
- * Exports a given JPanel to a PNG image.
+ * Creates a PNG image from a given JPanel.
  * 
  * @author murat
  */
@@ -33,6 +33,8 @@ public class ToPng implements ToImageConverter {
     public byte[] export(JPanel panel) {
         Image bimg = createImage(panel);
         PngEncoder png = new PngEncoder(bimg, true);
+        // Currently, we need to compress real well, because image format is too high.
+        png.setCompressionLevel(9);
         return png.pngEncode();
         // Encode as a JPEG
     }

@@ -19,8 +19,28 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
+/**
+ * Creates an image representation of a given panel's drawings.
+ * <p>
+ * A derivation determines the particular image format. 
+ * 
+ * @author murat
+ */
 public interface ToImageConverter {
+    
+    /**
+     * Creates an image representation from the panel.
+     * 
+     * @param panel The panel whose image representation is wanted.
+     * @return the image representation
+     */
     public byte[] export(JPanel panel);
     
+    /**
+     * Creates an image from the given panel's drawings.
+     * 
+     * @param panel whose drawings as image are wanted.
+     * @return the image
+     */
     public Image createImage(JPanel panel);
 }

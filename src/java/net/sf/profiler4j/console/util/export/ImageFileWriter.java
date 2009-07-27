@@ -25,14 +25,33 @@ import javax.swing.JPanel;
 
 import org.apache.commons.lang.Validate;
 
+/**
+ * Creates an image file from a given image.
+ * 
+ * @author murat
+ */
 public class ImageFileWriter {
     
-    public void writeFile(JPanel panel, ToImageConverter creator, File exportFile) throws IOException{
+    /**
+     * Export the given panel to an image file.
+     * <p>
+     * First, with the given converter, an image representation of the given
+     * panel is created. Then, it is dumped to the given file.
+     * 
+     * @param panel The panel which to export. Must not be {@code null}.
+     * @param converter The convert used to create the image representation of the panel.
+     * Must not be {@code null}.
+     * @param exportFile The file into which to write the image representation. Must be an opened, existing file
+     * for which write-access is granted. Must not be {@code null}.
+     *
+     * @throws IOException in case the file operations fail.
+     */
+    public void writeFile(JPanel panel, ToImageConverter converter, File exportFile) throws IOException{
         Validate.notNull(panel);
-        Validate.notNull(creator);
+        Validate.notNull(converter);
         Validate.notNull(exportFile);
         
-        byte[] imageBytes = creator.export(panel);
+        byte[] imageBytes = converter.export(panel);
                 FileOutputStream fos = new FileOutputStream(exportFile);
                 fos.write(imageBytes);
                 fos.close();
