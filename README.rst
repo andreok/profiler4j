@@ -9,3 +9,13 @@ I've created this fork to add one or two features, such as:
 - ...
 
 Maybe I'll even implement some of those goals.
+
+------------------------
+
+FORK CHANGELOG (excerpt)
+
+1.0-alpha1
+	- NEW: Currently shown call graph may be saved as PNG image via export-menu
+	- NEW: Project setting: After each snapshot, the callgraph is exported automatically.
+	- NEW: The call graph may be copied to clip board. 
+	- NEW: Enabled PNG compression.
