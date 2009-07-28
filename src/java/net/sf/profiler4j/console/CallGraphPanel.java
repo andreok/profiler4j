@@ -24,6 +24,9 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.datatransfer.Clipboard;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -32,15 +35,21 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.peer.KeyboardFocusManagerPeer;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
+import javax.swing.Action;
+import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
+import javax.swing.JComboBox.KeySelectionManager;
 
 import net.sf.profiler4j.console.client.Snapshot;
 import net.sf.profiler4j.console.client.Snapshot.Method;
@@ -59,6 +68,7 @@ public class CallGraphPanel extends HoverablePanel {
     private MethodView[][] matrix = new MethodView[256][512];
     private List<MethodView> rootNodes;
     private MethodView selectedNode;
+    private Set<MethodView> markedNodes = new HashSet<MethodView>();
     private Map<Method, MethodView> nodes = new HashMap<Method, MethodView>();
     static double maxTime;
     private int[] iyMax = new int[256];
@@ -93,6 +103,7 @@ public class CallGraphPanel extends HoverablePanel {
     private List<LinkView> selectedLinks = new ArrayList<LinkView>();
 
     private HoverManager hoverManager = new HoverManager();
+    
 
     private Comparator<MethodView> byNetTimeComparator = new Comparator<MethodView>() {
         public int compare(MethodView o1, MethodView o2) {
@@ -102,13 +113,24 @@ public class CallGraphPanel extends HoverablePanel {
 
     private MouseAdapter mouseAdapter = new MouseAdapter() {
         @Override
+        public void mouseMoved(MouseEvent e) {
+            super.mouseMoved(e);
+            requestFocus();
+        }
+
+        @Override
         public void mouseClicked(MouseEvent e) {
             MethodView n = findNode(e.getX(), e.getY());
             if (n != selectedNode) {
                 geometryOk = false;
                 selectedNode = n;
+                markedNodes.clear();
+                if (null != n) {
+                    markedNodes.add(n);
+                }
                 repaint();
             }
+            requestFocus();
         }
 
         @Override
@@ -116,6 +138,42 @@ public class CallGraphPanel extends HoverablePanel {
             hoverManager.reset();
         }
     };
+    
+    private KeyAdapter keyAdapter = new KeyAdapter() {
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            
+            // Mark more nodes starting from the already marked ones.
+            if (e.isShiftDown()) {
+                switch(e.getKeyCode()) {
+                    case KeyEvent.VK_LEFT:
+                        markEnteringNodes();
+                        geometryOk = false;
+                        repaint();
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        markExitingNodes();
+                        geometryOk = false;
+                        repaint();
+                        break;
+                    case KeyEvent.VK_HOME:
+                        markEnteringTree();
+                        geometryOk = false;
+                        repaint();
+                        break;
+                    case KeyEvent.VK_END:
+                        markExitingTree();
+                        geometryOk = false;
+                        repaint();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    };
+    
     private boolean antialiased = true;
 
     // //////////////////////////////////////////////////////////////////////////
@@ -128,7 +186,70 @@ public class CallGraphPanel extends HoverablePanel {
         hoverManager.setContainer(this);
         hoverManager.registerHover(new MethodBoxHoverWindow());
         hoverManager.registerHover(new LinkHoverWindow());
+        setFocusable(true);
+        addKeyListener(keyAdapter);
         addMouseListener(mouseAdapter);
+    }
+    
+    /**
+     * Marks all nodes which are parents of currently marked nodes.
+     */
+    private void markEnteringNodes() {
+        // This is complicated by the tree structure, where edges are directed. :/
+        Set<MethodView> newNodes = new HashSet<MethodView>();
+        for (MethodView n : nodes.values()) {
+            for (MethodView child : n.children)
+                if (n.visible && markedNodes.contains(child))
+                    newNodes.add(n);
+        }
+        markedNodes.addAll(newNodes);
+    }
+
+    /**
+     * Marks all nodes which are children of currently marked nodes.
+     * <p>
+     * In other words: Marks all children to which currently marked nodes have an exiting edge.
+     */
+    private void markExitingNodes() {
+        Set<MethodView> newNodes = new HashSet<MethodView>();
+        for (MethodView m : markedNodes) {
+            for (MethodView child : m.children)
+                if (child.visible)
+                    newNodes.add(child);
+        }
+        markedNodes.addAll(newNodes);
+    }
+
+    /**
+     * Marks all nodes that are direct or indirect parents of the currently marked nodes. 
+     */
+    private void markEnteringTree() {
+        Set<MethodView> newNodes = new HashSet<MethodView>();
+        do {
+            newNodes.clear();
+            for (MethodView n : nodes.values()) {
+                for (MethodView child : n.children)
+                    if (n.visible && markedNodes.contains(child))
+                        newNodes.add(n);
+            }
+            // Fix-point calculation until no more parents are added.
+        } while (markedNodes.addAll(newNodes));
+    }
+
+    /**
+     * Marks all nodes that are direct or indirect children of the currently marked nodes. 
+     */
+    private void markExitingTree() {
+        Set<MethodView> newNodes = new HashSet<MethodView>();
+        do {
+            newNodes.clear();
+            for (MethodView m : markedNodes) {
+                for (MethodView child : m.children)
+                    if (child.visible)
+                        newNodes.add(child);
+            }
+            // Fix-point calculation until no more children are added.
+        } while (markedNodes.addAll(newNodes));
     }
 
     @Override
@@ -206,10 +327,22 @@ public class CallGraphPanel extends HoverablePanel {
             l.paint(g);
         }
         //
+        // Draw selected links
+        //
+        g.setColor(Color.BLUE);
+        g.setStroke(selLinkStroke);
+        g.setColor(Color.BLUE);
+        g.setStroke(selLinkStroke);
+        for (LinkView l : selectedLinks) {
+            l.paint(g);
+        }
+        //
         // Draw unselected methods
         //
+        g.setColor(Color.BLACK);
+        g.setStroke(linkStroke);
         for (MethodView n : nodes.values()) {
-            if (n == selectedNode || !n.visible) {
+            if (markedNodes.contains(n) || !n.visible) {
                 continue;
             }
             g.setColor((n.visible) ? n.getColor() : disabledBgColor);
@@ -220,8 +353,7 @@ public class CallGraphPanel extends HoverablePanel {
             g.drawString(makeDetailText(n), n.x + 5, n.y + fm.getHeight() * 2);
         }
 
-        MethodView n = this.selectedNode;
-        if (n != null) {
+        for (MethodView n : markedNodes) {
             //
             // Draw selected method
             //
@@ -234,16 +366,6 @@ public class CallGraphPanel extends HoverablePanel {
             g.drawString(n.method.getMethodName(), n.x + 5, n.y + fm.getHeight());
             g.drawString(makeDetailText(n), n.x + 5, n.y + fm.getHeight() * 2);
             g.setStroke(defaultStroke);
-            //
-            // Draw selected links
-            //
-            g.setColor(Color.BLUE);
-            g.setStroke(selLinkStroke);
-            g.setColor(Color.BLUE);
-            g.setStroke(selLinkStroke);
-            for (LinkView l : selectedLinks) {
-                l.paint(g);
-            }
         }
     }
 
@@ -281,7 +403,7 @@ public class CallGraphPanel extends HoverablePanel {
                     continue;
                 }
                 LinkView link = new LinkView(src, dst);
-                if (selectedNode == src || selectedNode == dst) {
+                if (markedNodes.contains(src) || markedNodes.contains(dst)) {
                     selectedLinks.add(link);
                 } else {
                     links.add(link);
@@ -293,6 +415,7 @@ public class CallGraphPanel extends HoverablePanel {
     private void refresh() {
         geometryOk = false;
         selectedNode = null;
+        markedNodes.clear();
         createNodes();
         layNodes(rootNodes, 0, 0);
         applyNCut(40);
@@ -428,8 +551,16 @@ public class CallGraphPanel extends HoverablePanel {
             node.visible = (ncut >= 0);
             // dumpNode(node);
         }
+        
+        // Remove the selection from a node, if it's not visible.
         if (selectedNode != null && !selectedNode.visible) {
             selectedNode = null;
+        }
+        // Unmark all nodes that are not visible.
+        for (MethodView m : new ArrayList<MethodView>(markedNodes)) {
+            if (!m.visible) {
+                markedNodes.remove(m);
+            }
         }
         geometryOk = false;
     }

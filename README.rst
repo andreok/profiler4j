@@ -14,6 +14,9 @@ Maybe I'll even implement some of those goals.
 
 FORK CHANGELOG (excerpt)
 
+	- NEW: Automatically exported call graphs are always at maximum level of detail
+	- NEW: Using SHIFT + left/right or home/end, the marking of nodes can be spread.
+
 1.0-alpha1
 	- NEW: Currently shown call graph may be saved as PNG image via export-menu
 	- NEW: Project setting: After each snapshot, the callgraph is exported automatically.

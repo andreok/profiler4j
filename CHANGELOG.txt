@@ -1,6 +1,7 @@
 Change log for the profiler4j fork at http://github.com/jmc7479/profiler4j/
 
-	- NEW: Automatically exported call graphs always at maximum level of detail
+	- NEW: Automatically exported call graphs are always at maximum level of detail
+	- NEW: Using SHIFT + left/right or home/end, the marking of nodes can be spread.
 
 1.0-alpha1
 	- NEW: Currently shown call graph may be saved as PNG image via export-menu
