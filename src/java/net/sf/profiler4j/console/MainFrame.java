@@ -678,23 +678,14 @@ public class MainFrame extends JFrame implements AppEventListener {
      * Copies the call graph as an image to the clip board.
      */
     private void copyCallGraphToClipboard() {
+
         // Get the image.
-        
         Image image = new ToPng().createImage(getCallGraphPanel());
         ImageTransferable transferable = new ImageTransferable(image);
         
         // Get the necessary references to the clip board.
         Clipboard clipboard = getToolkit().getSystemClipboard();
-        
         clipboard.setContents(transferable, transferable);
-        
-//        TransferHandler handler = new TransferHandler(null);
-//        
-//        // Do the copying.
-//        handler.exportToClipboard(
-//            getCallGraphPanel(),    // what to copy
-//            clipboard,              // where to copy it
-//            TransferHandler.COPY);  // copy only
     }
 
     /**
@@ -704,7 +695,6 @@ public class MainFrame extends JFrame implements AppEventListener {
     private JButton getCopyToClipboardButton() {
         if (null == copyToClipboardButton) {
             copyToClipboardButton = new JButton("Copy");
-            copyToClipboardButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
             copyToClipboardButton.addActionListener(new ActionListener() {
                 
                 public void actionPerformed(ActionEvent arg0) {
@@ -741,7 +731,7 @@ public class MainFrame extends JFrame implements AppEventListener {
      * 
      * @return javax.swing.JSlider
      */
-    private JSlider getNcutSlider() {
+    public JSlider getNcutSlider() {
         if (ncutSlider == null) {
             ncutSlider = new JSlider();
             ncutSlider.setMaximum(100);

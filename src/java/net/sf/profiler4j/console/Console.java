@@ -438,11 +438,19 @@ public class Console {
                 try {
                     // Generate a new file to export the image.
                     FilenameGenerator generator = new FilenameGenerator(project.getExportPattern());
+                    
+                    // Zoom the call graph to max resolution.
+                    CallGraphPanel panel = getMainFrame().getCallGraphPanel();
+                    panel.applyNCut(mainFrame.getNcutSlider().getMaximum());
+                    
                     new ImageFileWriter().writeFile(
-                            getMainFrame().getCallGraphPanel(), // The panel to draw.
+                            panel, // The panel to draw.
                             new ToPng(),                        // The image creator, defining the image format.
                             generator.getValidFile()            // The file to write the image to.
                             );
+                    
+                    // Reduce the resolution to the original value.
+                    panel.applyNCut(mainFrame.getNcutSlider().getValue());
                     
                 } catch (FileNotFoundException exc) {
                     JOptionPane.showMessageDialog(getMainFrame(), MSG_FAILURE_TO_GENERATE_FILENAME + exc.getMessage());
