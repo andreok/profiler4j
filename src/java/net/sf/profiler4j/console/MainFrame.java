@@ -864,12 +864,15 @@ public class MainFrame extends JFrame implements AppEventListener {
     }
 
     private void viewSnapshot(Snapshot sn) {
+        // Update call tree.
         TreeBuilder builder = new TreeBuilder(sn);
         DefaultMutableTreeNode root = builder.buildTree();
         DefaultTreeModel model = new DefaultTreeModel(root);
         tree.setModel(model);
         tree.setShowsRootHandles(false);
         tree.setCellRenderer(new MethodRenderer());
+        
+        // Update call graph with the current zoom settings.
         getCallGraphPanel().setSnapshot(sn);
         getCallGraphPanel().applyNCut(ncutSlider.getValue());
     }

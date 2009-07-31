@@ -63,6 +63,7 @@ import net.sf.profiler4j.console.util.hover.HoverablePanel;
  */
 public class CallGraphPanel extends HoverablePanel {
 
+    private static final int NCUT_INITIAL_VALUE = 40;
     private Snapshot snapshot;
     // [ix][iy]
     private MethodView[][] matrix = new MethodView[256][512];
@@ -97,7 +98,7 @@ public class CallGraphPanel extends HoverablePanel {
     static int spacingY = 20;
     static int methodWidth = 150;
     static int methodHeight = 32;
-    static int r = 10;
+    static int arcDims = 10;
 
     private List<LinkView> links = new ArrayList<LinkView>();
     private List<LinkView> selectedLinks = new ArrayList<LinkView>();
@@ -131,6 +132,7 @@ public class CallGraphPanel extends HoverablePanel {
                 repaint();
             }
             requestFocus();
+            System.out.println(e.getPoint());
         }
 
         @Override
@@ -267,15 +269,15 @@ public class CallGraphPanel extends HoverablePanel {
     }
 
     private MethodView findNode(int x, int y) {
-        Rectangle r = new Rectangle();
-        for (MethodView n : nodes.values()) {
-            if (n.visible) {
-                r.x = n.x;
-                r.y = n.y;
-                r.width = n.w;
-                r.height = n.h;
-                if (r.contains(x, y)) {
-                    return n;
+        Rectangle rect = new Rectangle();
+        for (MethodView node : nodes.values()) {
+            if (node.visible) {
+                rect.x = node.x;
+                rect.y = node.y;
+                rect.width = node.w;
+                rect.height = node.h;
+                if (rect.contains(x, y)) {
+                    return node;
                 }
             }
         }
@@ -284,14 +286,9 @@ public class CallGraphPanel extends HoverablePanel {
 
     public void setSnapshot(Snapshot snapshot) {
         this.snapshot = snapshot;
-        if (snapshot == null) {
-            nodes.clear();
-            setPreferredSize(new Dimension(320, 300));
-            repaint();
-            revalidate();
-        } else {
-            refresh();
-        }
+        refresh();
+        revalidate();
+        repaint();
     }
 
     @Override
@@ -341,30 +338,30 @@ public class CallGraphPanel extends HoverablePanel {
         //
         g.setColor(Color.BLACK);
         g.setStroke(linkStroke);
-        for (MethodView n : nodes.values()) {
-            if (markedNodes.contains(n) || !n.visible) {
+        for (MethodView node : nodes.values()) {
+            if (markedNodes.contains(node) || !node.visible) {
                 continue;
             }
-            g.setColor((n.visible) ? n.getColor() : disabledBgColor);
-            g.fillRoundRect(n.x, n.y, n.w, n.h, r, r);
-            g.setColor((n.visible) ? Color.BLACK : disabledFgColor);
-            g.drawRoundRect(n.x, n.y, n.w, n.h, r, r);
-            g.drawString(n.method.getMethodName(), n.x + 5, n.y + fm.getHeight());
-            g.drawString(makeDetailText(n), n.x + 5, n.y + fm.getHeight() * 2);
+            g.setColor((node.visible) ? node.getColor() : disabledBgColor);
+            g.fillRoundRect(node.x, node.y, node.w, node.h, arcDims, arcDims);
+            g.setColor((node.visible) ? Color.BLACK : disabledFgColor);
+            g.drawRoundRect(node.x, node.y, node.w, node.h, arcDims, arcDims);
+            g.drawString(node.method.getMethodName(), node.x + 5, node.y + fm.getHeight());
+            g.drawString(makeDetailText(node), node.x + 5, node.y + fm.getHeight() * 2);
         }
 
-        for (MethodView n : markedNodes) {
+        for (MethodView node : markedNodes) {
             //
             // Draw selected method
             //
-            g.setColor(n.getColor());
+            g.setColor(node.getColor());
             g.setStroke(selStroke);
-            g.fillRoundRect(n.x, n.y, n.w, n.h, r, r);
+            g.fillRoundRect(node.x, node.y, node.w, node.h, arcDims, arcDims);
             g.setColor(Color.BLUE);
-            g.drawRoundRect(n.x, n.y, n.w, n.h, r, r);
+            g.drawRoundRect(node.x, node.y, node.w, node.h, arcDims, arcDims);
             g.setColor(Color.BLACK);
-            g.drawString(n.method.getMethodName(), n.x + 5, n.y + fm.getHeight());
-            g.drawString(makeDetailText(n), n.x + 5, n.y + fm.getHeight() * 2);
+            g.drawString(node.method.getMethodName(), node.x + 5, node.y + fm.getHeight());
+            g.drawString(makeDetailText(node), node.x + 5, node.y + fm.getHeight() * 2);
             g.setStroke(defaultStroke);
         }
     }
@@ -383,11 +380,11 @@ public class CallGraphPanel extends HoverablePanel {
         //
         // Compute method boxes
         //
-        for (MethodView n : nodes.values()) {
-            n.x = n.ix * (methodWidth + spacingX) + offsetX;
-            n.y = n.iy * (methodHeight + spacingY) + offsetY;
-            n.w = methodWidth;
-            n.h = methodHeight;
+        for (MethodView node : nodes.values()) {
+            node.x = node.ix * (methodWidth + spacingX) + offsetX;
+            node.y = node.iy * (methodHeight + spacingY) + offsetY;
+            node.w = methodWidth;
+            node.h = methodHeight;
         }
         links.clear();
         selectedLinks.clear();
@@ -418,7 +415,7 @@ public class CallGraphPanel extends HoverablePanel {
         markedNodes.clear();
         createNodes();
         layNodes(rootNodes, 0, 0);
-        applyNCut(40);
+        applyNCut(NCUT_INITIAL_VALUE);
     }
 
     private void layNodes(List<MethodView> nodeList, int level, int y) {
@@ -428,26 +425,26 @@ public class CallGraphPanel extends HoverablePanel {
         ixMax = 1;
         Collections.sort(nodeList, byNetTimeComparator);
 
-        // System.out.println("-------");
+        // Position the root node along the left border
+        // and position their children, subsequently processing
+        // the entire graph.
         for (MethodView rootNode : nodeList) {
+            // The root nodes form the first vertical layer.
             rootNode.ix = level;
             rootNode.iy = iyMax[0]++;
             rootNode.visible = true;
-            // dumpNode(rootNode);
+            
+            // Update the matrix and process the root's children.
             matrix[rootNode.ix][rootNode.iy] = rootNode;
             lay(1, rootNode.children);
-        }
-        level++;
-
-        int ymax_ = -1;
-        for (int i = 0; i < iyMax.length; i++) {
-            ymax_ = Math.max(iyMax[i], ymax_);
         }
 
         //
         // Sort columns
         //
-
+        // For each x layer sort the nodes by the respective duration
+        // and re-position them in the matrix that those with the highest
+        // time come out on top.
         List<MethodView> colNodes = new ArrayList<MethodView>();
         for (int ix = 0; ix < ixMax; ix++) {
             colNodes.clear();
@@ -456,59 +453,28 @@ public class CallGraphPanel extends HoverablePanel {
             }
             Collections.sort(colNodes, byNetTimeComparator);
             int iy = 0;
-            // System.out.format("Column #%d\n", ix);
             for (MethodView n : colNodes) {
                 matrix[ix][iy] = n;
                 n.iy = iy;
-                // System.out.format(" cell #%d (time %.0f ms)\n", iy,
-                // n.method.getNetTime());
                 iy++;
             }
         }
 
-        // Random rnd = new Random();
-        // long[] bestSeed = new long[ixMax];
-        // long seed = 0;
-        // for (int ix = 1; ix < ixMax; ix++) {
-        // double minCost = Double.MAX_VALUE;
-        // for (int k = 0; k < 100; k++) {
-        // double cost = 0;
-        // seed = System.nanoTime();
-        // rnd.setSeed(seed);
-        // for (int iy = 0; iy < iyMax[ix] / 2; iy++) {
-        // int nextInt = rnd.nextInt(iyMax[ix] / 2);
-        // swapY(ix, iy, nextInt);
-        // }
-        // for (int iy = 0; iy < iyMax[ix-1] / 2; iy++) {
-        // MethodView n = matrix[ix-1][iy];
-        // for (MethodView cn : matrix[ix-1][iy].children) {
-        // int d = Math.abs(n.iy - cn.iy);
-        // cost += d * d * d * n.method.getNetTime()
-        // * (1 + iy);
-        // }
-        // }
-        // if (cost < minCost) {
-        // minCost = cost;
-        // bestSeed[ix] = seed;
-        // System.out.println("cost = " + cost);
-        // }
-        // }
-        //
-        // }
-        //
-        // for (int ix = 1; ix < ixMax; ix++) {
-        // rnd.setSeed(bestSeed[ix]);
-        // for (int iy = 0; iy < iyMax[ix] / 2; iy++) {
-        // swapY(ix, iy, rnd.nextInt(iyMax[ix] / 2));
-        // }
-        // }
-
-        setPreferredSize(new Dimension(ixMax * (methodWidth + spacingX) + offsetX, ymax_
-                * (methodHeight + spacingY) + offsetY));
+        // Determine the maximum number of methods stacked on top of each other
+        // i.e. on the y-axis.
+        int ymax_ = -1;
+        for (int iy : iyMax) {
+            ymax_ = Math.max(iy, ymax_);
+        }
+        
+        setPreferredSize(new Dimension(
+                ixMax * (methodWidth + spacingX) + offsetX,
+                (ymax_ * (methodHeight + spacingY)) + offsetY));
         repaint();
         revalidate();
     }
 
+    @SuppressWarnings("unused")
     private void swapY(int x, int y1, int y2) {
         MethodView aux = matrix[x][y1];
         matrix[x][y1] = matrix[x][y2];
@@ -526,23 +492,34 @@ public class CallGraphPanel extends HoverablePanel {
                           rootNode.iy);
     }
 
+    /**
+     * Determine the x,y coordinates (in node coordinates) for all
+     * given nodes.
+     * <p>
+     * Only invisible nodes are considered, i.e. nodes that have not
+     * yet been layed out.
+     * <p>
+     * The highest x coordinate is updated. 
+     * 
+     * @param ix
+     * @param nodes
+     */
     private void lay(int ix, List<MethodView> nodes) {
-        for (MethodView n : nodes) {
-            if (n.visible) {
+        for (MethodView node : nodes) {
+            if (node.visible) {
                 continue;
             }
-            n.ix = ix;
-            n.iy = iyMax[ix]++;
-            n.visible = true;
+            node.ix = ix;
+            node.iy = iyMax[ix]++;
+            node.visible = true;
             // dumpNode(n);
-            matrix[n.ix][n.iy] = n;
-            lay(ix + 1, n.children);
+            matrix[node.ix][node.iy] = node;
+            lay(ix + 1, node.children);
         }
         ixMax = Math.max(ixMax, ix);
     }
     
     public void applyNCut(int n) {
-        // System.out.println("NCUT(" + n + ")");
         List<MethodView> aux = new ArrayList<MethodView>(nodes.values());
         Collections.sort(aux, byNetTimeComparator);
         int ncut = n;
@@ -571,11 +548,11 @@ public class CallGraphPanel extends HoverablePanel {
         if (snapshot == null) {
             return;
         }
-        for (Method m : snapshot.getMethods().values()) {
-            MethodView n = new MethodView();
-            n.method = m;
-            maxTime = Math.max(maxTime, m.getNetTime());
-            nodes.put(m, n);
+        for (Method method : snapshot.getMethods().values()) {
+            MethodView node = new MethodView();
+            node.method = method;
+            maxTime = Math.max(maxTime, method.getNetTime());
+            nodes.put(method, node);
         }
         for (MethodView node : nodes.values()) {
             for (Method m : node.method.getChildrenTimes().keySet()) {
@@ -601,8 +578,6 @@ public class CallGraphPanel extends HoverablePanel {
             }
         }
     }
-    
-    private static int k = 70;
 
 }
 

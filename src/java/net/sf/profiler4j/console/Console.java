@@ -17,7 +17,6 @@ import static javax.swing.JOptionPane.showMessageDialog;
 
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,9 +36,7 @@ import net.sf.profiler4j.console.client.Client;
 import net.sf.profiler4j.console.client.ClientException;
 import net.sf.profiler4j.console.client.ProgressCallback;
 import net.sf.profiler4j.console.client.Snapshot;
-import net.sf.profiler4j.console.util.export.FilenameGenerator;
-import net.sf.profiler4j.console.util.export.ImageFileWriter;
-import net.sf.profiler4j.console.util.export.ToPng;
+import net.sf.profiler4j.console.util.task.ExportCallgraphTask;
 import net.sf.profiler4j.console.util.task.LongTask;
 import net.sf.profiler4j.console.util.task.LongTaskExecutorDialog;
 
@@ -58,10 +55,6 @@ import org.jdom.output.XMLOutputter;
  * @author Antonio S. R. Gomes
  */
 public class Console {
-
-    private static final String MSG_FAILED_EXPORTING_CALLGRAPH = "Failed exporting the callgraph: ";
-
-    private static final String MSG_FAILURE_TO_GENERATE_FILENAME = "Could not generate a filename from the pattern, callgraph exporting failed: ";
 
     private static final Log log = LogFactory.getLog(Console.class);
 
@@ -435,32 +428,9 @@ public class Console {
             // In case the project settings specify this, dump a snapshot using the filename pattern
             // specified by the user.
             if (project.isExportAutomaticallyEnabled()) {
-                try {
-                    // Generate a new file to export the image.
-                    FilenameGenerator generator = new FilenameGenerator(project.getExportPattern());
-                    
-                    // Zoom the call graph to max resolution.
-                    CallGraphPanel panel = getMainFrame().getCallGraphPanel();
-                    panel.applyNCut(mainFrame.getNcutSlider().getMaximum());
-                    
-                    new ImageFileWriter().writeFile(
-                            panel, // The panel to draw.
-                            new ToPng(),                        // The image creator, defining the image format.
-                            generator.getValidFile()            // The file to write the image to.
-                            );
-                    
-                    // Reduce the resolution to the original value.
-                    panel.applyNCut(mainFrame.getNcutSlider().getValue());
-                    
-                } catch (FileNotFoundException exc) {
-                    JOptionPane.showMessageDialog(getMainFrame(), MSG_FAILURE_TO_GENERATE_FILENAME + exc.getMessage());
-                    // If the pattern is invalid, then disable further exporting.
-                    project.setExportAutomaticallyEnabled(false);
-                } catch (IOException exc) {
-                    JOptionPane.showMessageDialog(getMainFrame(), MSG_FAILED_EXPORTING_CALLGRAPH + exc.getMessage());
-                    // If the pattern is invalid, then disable further exporting.
-                    project.setExportAutomaticallyEnabled(false);
-                }
+                
+                t = new ExportCallgraphTask(s, project, getMainFrame());
+                runInBackground(t);
             }
         }
     }

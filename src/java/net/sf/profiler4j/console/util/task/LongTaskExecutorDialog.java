@@ -58,7 +58,7 @@ public class LongTaskExecutorDialog extends JDialog {
         this.setSize(486, 107);
         this.setResizable(false);
         this.setModal(true);
-        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         this.setTitle("Remote Command Monitor");
         this.setContentPane(getJContentPane());
     }

@@ -40,13 +40,19 @@ public class ToPng implements ToImageConverter {
     }
 
     public Image createImage(JPanel panel) {
-        BufferedImage bimg = new BufferedImage(panel.getWidth(), panel.getHeight(),
+        // The image needs to be correctly sized even in case the panel has never
+        // been drawn yet. So, we trust that during setting the panel's content,
+        // someone already did calculate and specify a preferred size. (Is the
+        // case for the callgraph panel.)
+        panel.setSize(panel.getPreferredSize());
+        BufferedImage bimg = new BufferedImage(
+                panel.getWidth(), panel.getHeight(),
                 BufferedImage.TYPE_INT_RGB);
 
         // Let the panel draw itself as usual, except its not drawing
         // on the screenbuffer but rather in our pixel map.
         panel.paint((Graphics2D) bimg.getGraphics());
-
+        
         return bimg;
     }
 
