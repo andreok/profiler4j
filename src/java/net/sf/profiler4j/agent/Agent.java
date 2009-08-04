@@ -73,6 +73,7 @@ public class Agent {
         print(0, "+---------------------------------------------------+");
         print(0, "| Profiler4j Agent " + String.format("%-33s", VERSION) + "|");
         print(0, "| Copyright 2006 Antonio S. R. Gomes                |");
+        print(0, "| Copyright 2009 Murat Knecht                       |");
         print(0, "| See LICENSE-2.0.txt details                       |");
         print(0, "+---------------------------------------------------+");
 
