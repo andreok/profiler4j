@@ -292,7 +292,7 @@ public class CallGraphPanel extends HoverablePanel {
     }
 
     @Override
-    public void paint(Graphics g_) {
+    public synchronized void paint(Graphics g_) {
         super.paint(g_);
         Graphics2D g = (Graphics2D) g_;
         g.setStroke(defaultStroke);

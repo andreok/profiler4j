@@ -124,7 +124,7 @@ public class Project {
         return out.toString();
     }
 
-    public String formtRules() {
+    public String formatRules() {
         StringBuilder out = new StringBuilder();
         for (net.sf.profiler4j.console.Rule r : getRules()) {
             out.append(r.getPattern() + " : " + r.getAction().toString().toLowerCase()

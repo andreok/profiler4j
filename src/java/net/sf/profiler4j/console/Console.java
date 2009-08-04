@@ -138,7 +138,7 @@ public class Console {
                 setTaskMessage("Establishing connection with remote JVM...");
                 client.connect(project.getHostname(), project.getPort());
                 setTaskMessage("Activating profiling rules...");
-                client.applyRules(project.formtRules(),
+                client.applyRules(project.formatRules(),
                                   project.formatOptions(),
                                   new ProgressCallback() {
                                       private int max;
@@ -391,7 +391,7 @@ public class Console {
         LongTask t = new LongTask() {
             public void executeInBackground() throws Exception {
                 setTaskMessage("Activating profiling rules...");
-                client.applyRules(project.formtRules(),
+                client.applyRules(project.formatRules(),
                                   project.formatOptions(),
                                   new ProgressCallback() {
                                       private int max;

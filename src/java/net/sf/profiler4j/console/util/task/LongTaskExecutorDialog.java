@@ -143,14 +143,14 @@ public class LongTaskExecutorDialog extends JDialog {
     private Throwable error;
 
     public void runTask(final LongTask task) {        
-        label.setText("<html>Executing long-running task...");
+        label.setText("Executing long-running task...");
         task.setDialog(this);
         Thread t = new Thread("PROFILER4J_TASK") {
             public void run() {
                 log.debug("TASK STARTED");
                 try {
                     task.executeInBackground();
-                } catch (final Throwable e) {
+                } catch (final Exception e) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             log.error("Caught task error", e);
@@ -176,6 +176,7 @@ public class LongTaskExecutorDialog extends JDialog {
                                 task.setError(error);
                             } else {
                                 setVisible(false);
+                                dispose();
                             }
                         }
                     });
@@ -189,7 +190,6 @@ public class LongTaskExecutorDialog extends JDialog {
 
         setLocation(getLocation().x, getLocation().y - 120);
         setVisible(true);
-
     }
 
 } // @jve:decl-index=0:visual-constraint="10,10"
