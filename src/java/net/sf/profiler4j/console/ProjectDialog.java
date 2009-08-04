@@ -73,8 +73,6 @@ public class ProjectDialog extends JDialog {
 
     private JTextField exportPatternText = null;
 
-    private final static String DEFAULT_EXPORT_PATTERN = SystemUtils.getUserHome() + SystemUtils.FILE_SEPARATOR + "profiler4j_%i.png"; 
-    
     public ProjectDialog(JFrame owner, Console app) {
         super(owner);
         this.app = app;
@@ -542,23 +540,9 @@ public class ProjectDialog extends JDialog {
     JTextField getExportPatternText() {
         if (null == exportPatternText) {
             
-            exportPatternText = new JTextField(DEFAULT_EXPORT_PATTERN);
+            exportPatternText = new JTextField();
             exportPatternText.setBounds(new Rectangle(7,510,691, 40));
             exportPatternText.setEnabled(false);
-            exportPatternText.addKeyListener(new KeyListener() {
-                
-                public void keyTyped(KeyEvent e) {
-                    edited = true;
-                }
-                
-                public void keyReleased(KeyEvent e) {
-                    // don't care
-                }
-                
-                public void keyPressed(KeyEvent e) {
-                    // don't care
-                }
-            });
         }
         return exportPatternText;
     }
@@ -673,9 +657,16 @@ public class ProjectDialog extends JDialog {
         for (Rule r : p.getRules()) {
             ruleTableModel.insert(r);
         }
+        
+        exportCheckBox.setSelected(p.isExportAutomaticallyEnabled());
+        exportPatternText.setText(p.getExportPattern());
 
         setVisible(true);
 
+        // (mk) I really don't understand why this works - shouldn't all 
+        // values possibly edited by the user have been overwritten in the
+        // UI updates above? This method should basically perform a sync
+        // with the UI, reading from the given project, not updating it.
         if (edited) {
             p.setHostname(hostTextField.getText());
             p.setPort(Integer.parseInt(portTextField.getText()));

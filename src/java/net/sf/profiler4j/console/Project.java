@@ -18,6 +18,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.SystemUtils;
+
 /**
  * POJO that represents a profiler project.
  * 
@@ -29,6 +31,7 @@ public class Project {
 //    private static final Rule RULE__ACCEPT_PROFILER4J_TEST_CLASSES = new Rule("net.sf.profiler4j.test.*(*)", Rule.Action.ACCEPT);
     // TODO (mk) remove me on project finish
     private static final Rule RULE__ACCEPT_PROFILER4J_TEST_CLASSES = new Rule("org.gudy.azureus2.ui.*(*)", Rule.Action.ACCEPT);
+    private final static String EXPORT_PATTERN_DEFAULT = SystemUtils.getUserHome() + SystemUtils.FILE_SEPARATOR + "profiler4j_%i.png"; 
 
     private boolean changed;
 
@@ -44,6 +47,8 @@ public class Project {
     
     /** The image filename pattern for exporting purposes. */
     private String exportPattern = null;
+    
+    
 
     public Project() {
         // Set default rules
@@ -58,6 +63,8 @@ public class Project {
         //rules.add(new Rule("*(*)", Rule.Action.REJECT));
         
         rules.add(RULE__ACCEPT_PROFILER4J_TEST_CLASSES);
+        
+        setExportPattern(EXPORT_PATTERN_DEFAULT);
     }
 
     public String getHostname() {
@@ -145,6 +152,7 @@ public class Project {
      * @param exportPattern the filename pattern to set, may be {@code null}
      */
     public void setExportPattern(String exportPattern) {
+        changed = true;
         this.exportPattern = exportPattern;
     }
 
@@ -169,6 +177,7 @@ public class Project {
      * @see #setExportPattern(String)
      */
     public void setExportAutomaticallyEnabled(boolean exportAutomaticallyEnabled) {
+        changed = true;
         this.exportAutomaticallyEnabled = exportAutomaticallyEnabled;
     }
 
