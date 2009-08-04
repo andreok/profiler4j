@@ -1,5 +1,6 @@
 /*
  * Copyright 2006 Antonio S. R. Gomes
+ * Copyright 2009 Murat Knecht
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at
@@ -55,6 +56,11 @@ import org.jdom.output.XMLOutputter;
  * @author Antonio S. R. Gomes
  */
 public class Console {
+
+    private static final String PROJECT_XML_ATTRIBUTE__ENABLED = "enabled";
+    private static final String PROJECT_XML_ATTRIBUTE__PATTERN = "pattern";
+
+    private static final String PROJECT_XML_ELEMENT__EXPORT_PATTERN = "export";
 
     private static final Log log = LogFactory.getLog(Console.class);
 
@@ -299,6 +305,17 @@ public class Console {
                         .getAttributeValue("action")));
                     p.getRules().add(rule);
                 }
+                
+                // Backwards compatible way to read the export pattern
+                // If it is not there, we leave the defaults as they are,
+                // otherwise we set the saved setting.
+                Element export = el.getChild(PROJECT_XML_ELEMENT__EXPORT_PATTERN);
+                if (null != export) {
+                    String enabled = export.getAttributeValue(PROJECT_XML_ATTRIBUTE__ENABLED);
+                    p.setExportAutomaticallyEnabled(Boolean.valueOf(enabled));
+                    p.setExportPattern(export.getAttributeValue(PROJECT_XML_ATTRIBUTE__PATTERN));
+                }
+                
                 p.setFile(selFile);
                 p.clearChanged();
                 this.project = p;
@@ -361,6 +378,12 @@ public class Console {
                 .setText(rule.getPattern())
                     .setAttribute("action", rule.getAction().name()));
         }
+        
+        Element exportPatternEl = new Element(PROJECT_XML_ELEMENT__EXPORT_PATTERN);
+        String enabled = String.valueOf(project.isExportAutomaticallyEnabled());
+        exportPatternEl.setAttribute(PROJECT_XML_ATTRIBUTE__ENABLED, enabled);
+        exportPatternEl.setAttribute(PROJECT_XML_ATTRIBUTE__PATTERN, project.getExportPattern());
+        rootEl.addContent(exportPatternEl);
 
         try {
             FileWriter fw = new FileWriter(project.getFile());
