@@ -19,8 +19,7 @@ FORK CHANGELOG (excerpt)
 1.0-alpha2
 	- NEW: Automatically exported call graphs are always at maximum level of detail
 	- NEW: Using SHIFT + left/right or home/end, the marking of nodes can be spread.
-	- BUG: "Remote Command Monitor" hides on close and is disposed of, when done.
-		   (It used to stay open sometimes, hope this is fixed now.)
+	- BUG: "Remote Command Monitor" hides on close and is disposed of, when done. (It used to stay open sometimes, hope this is fixed now.)
 
 1.0-alpha1
 	- NEW: Currently shown call graph may be saved as PNG image via export-menu
