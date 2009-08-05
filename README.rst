@@ -16,6 +16,10 @@ Maybe I'll even implement some of those goals.
 
 FORK CHANGELOG (excerpt)
 
+1.0-alpha3 (not officially released)
+	- NEW: Export options in project settings get saved/loaded, too.
+	- NEW: Snapshots can now be saved and loaded via the File menu.
+
 1.0-alpha2
 	- NEW: Automatically exported call graphs are always at maximum level of detail
 	- NEW: Using SHIFT + left/right or home/end, the marking of nodes can be spread.

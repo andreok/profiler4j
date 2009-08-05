@@ -18,6 +18,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +51,9 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
 /**
  * Application controller.
  * 
@@ -71,6 +75,7 @@ public class Console {
     private File lastDir;
     private Prefs prefs;
     private Document tipDoc;
+    private Snapshot snapshot = null;
 
     private Timer memoryPanelTimer = new Timer(1000, new ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -445,14 +450,14 @@ public class Console {
         };
         runInBackground(t);
         if (t.getError() == null) {
-            Snapshot s = (Snapshot) t.getValue();
-            sendEvent(AppEventType.SNAPSHOT, s);
+            snapshot = (Snapshot) t.getValue();
+            sendEvent(AppEventType.SNAPSHOT, snapshot);
             
             // In case the project settings specify this, dump a snapshot using the filename pattern
             // specified by the user.
             if (project.isExportAutomaticallyEnabled()) {
                 
-                t = new ExportCallgraphTask(s, project, getMainFrame());
+                t = new ExportCallgraphTask(snapshot, project, getMainFrame());
                 runInBackground(t);
             }
         }
@@ -586,6 +591,32 @@ public class Console {
     public Client getClient() {
         return this.client;
     }
+    
+    
+    public void saveCurrentSnapshotToFile(File destination) {
+        XStream xstream = new XStream(new DomDriver());
+        String xml = xstream.toXML(snapshot);
+        try {
+            FileWriter fwriter = new FileWriter(destination);
+            fwriter.write(xml);
+            fwriter.close();
+        } catch (IOException exc) {
+            error("I/O Error", exc);
+        }
+    }
+    
+    public void loadSnapshotFromFile(File source) {
+        XStream xstream = new XStream(new DomDriver());
+        try {
+        snapshot = (Snapshot)xstream.fromXML(new FileReader(source));
+        } catch (IOException exc) {
+            error("I/O Error", exc);
+            return;
+        }
+        sendEvent(AppEventType.SNAPSHOT, snapshot);
+    }
+    
+    
 
     public static void main(String[] args) {
 

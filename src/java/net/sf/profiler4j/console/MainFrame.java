@@ -28,6 +28,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.server.ExportException;
 
@@ -58,6 +59,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
 import net.sf.profiler4j.agent.AgentConstants;
 import net.sf.profiler4j.console.TreeBuilder.NodeInfo;
 import net.sf.profiler4j.console.client.ClientException;
@@ -82,7 +89,9 @@ public class MainFrame extends JFrame implements AppEventListener {
     private JMenuBar jJMenuBar = null;
     private JMenu fileMenu = null;
     private JMenu exportMenu = null;
-    private JMenuItem openMenuItem = null;
+    private JMenuItem openBinaryDumpMenuItem = null;
+    private JMenuItem openSnapshotMenuItem = null;
+    private JMenuItem saveSnapshotMenuItem = null;
     private JMenuItem exportCallGraphMenuItem = null;
 
     private FileFilter fileFilter = new FileFilter() {
@@ -109,6 +118,21 @@ public class MainFrame extends JFrame implements AppEventListener {
         @Override
         public String getDescription() {
             return "PNG Image (.png)";
+        }
+    };
+
+    private FileFilter snapshotFilter = new FileFilter() {
+        @Override
+        public boolean accept(File f) {
+            return f.isDirectory()
+                || f.exists()
+                && (   f.getName().endsWith(".p4j-snapshot")
+                   );
+        }
+
+        @Override
+        public String getDescription() {
+            return "Profiler4j-Snapshots (.p4j-snapshot)";
         }
     };
 
@@ -233,31 +257,75 @@ public class MainFrame extends JFrame implements AppEventListener {
         if (fileMenu == null) {
             fileMenu = new JMenu();
             fileMenu.setText("File");
-            fileMenu.add(getOpenMenuItem());
+            fileMenu.add(getOpenBinaryDumpMenuItem());
+            fileMenu.add(getOpenSnapshotMenuItem());
+            fileMenu.add(getSaveSnapshotMenuItem());
             fileMenu.add(getOptionsMenuItem());
             fileMenu.add(getExitMenuItem());
         }
         return fileMenu;
     }
 
-    /**
-     * This method initializes openMenuItem
-     * 
-     * @return javax.swing.JMenuItem
-     */
-    private JMenuItem getOpenMenuItem() {
-        if (openMenuItem == null) {
-            openMenuItem = new JMenuItem();
-            openMenuItem.setText("Open dump file...");
-            openMenuItem.setEnabled(false);
-            openMenuItem.setVisible(false);
-            openMenuItem.addActionListener(new java.awt.event.ActionListener() {
+    private JMenuItem getOpenBinaryDumpMenuItem() {
+        if (openBinaryDumpMenuItem == null) {
+            openBinaryDumpMenuItem = new JMenuItem();
+            openBinaryDumpMenuItem.setText("Open binary dump...");
+            openBinaryDumpMenuItem.setEnabled(false);
+            openBinaryDumpMenuItem.setVisible(false);
+            openBinaryDumpMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     open();
                 }
             });
         }
-        return openMenuItem;
+        return openBinaryDumpMenuItem;
+    }
+
+    private JMenuItem getOpenSnapshotMenuItem() {
+        if (openSnapshotMenuItem == null) {
+            openSnapshotMenuItem = new JMenuItem();
+            openSnapshotMenuItem.setText("Open snapshot...");
+            openSnapshotMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    JFileChooser fc = new JFileChooser(lastDir);
+                    fc.setFileFilter(snapshotFilter);
+                    
+                    if (JFileChooser.APPROVE_OPTION != fc.showOpenDialog(MainFrame.this)) {
+                        // user pressed cancel
+                        return;
+                    }
+                    
+                    lastDir = fc.getSelectedFile().getParent();
+                    app.loadSnapshotFromFile(fc.getSelectedFile());
+                    
+                }
+            });
+        }
+        return openSnapshotMenuItem;
+    }
+
+    private JMenuItem getSaveSnapshotMenuItem() {
+        if (saveSnapshotMenuItem == null) {
+            saveSnapshotMenuItem = new JMenuItem();
+            saveSnapshotMenuItem.setText("Save snapshot...");
+            saveSnapshotMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    JFileChooser fc = new JFileChooser(lastDir);
+                    fc.setFileFilter(snapshotFilter);
+                    
+                    if (JFileChooser.APPROVE_OPTION != fc.showSaveDialog(MainFrame.this)) {
+                        // user pressed cancel
+                        return;
+                    }
+                    
+                    lastDir = fc.getSelectedFile().getParent();
+                    
+                    app.saveCurrentSnapshotToFile(fc.getSelectedFile());
+                    
+                }
+            });
+        }
+        return saveSnapshotMenuItem;
     }
 
     /**
@@ -863,9 +931,9 @@ public class MainFrame extends JFrame implements AppEventListener {
         return false;
     }
 
-    private void viewSnapshot(Snapshot sn) {
+    private void viewSnapshot(Snapshot snapshot) {
         // Update call tree.
-        TreeBuilder builder = new TreeBuilder(sn);
+        TreeBuilder builder = new TreeBuilder(snapshot);
         DefaultMutableTreeNode root = builder.buildTree();
         DefaultTreeModel model = new DefaultTreeModel(root);
         tree.setModel(model);
@@ -873,7 +941,7 @@ public class MainFrame extends JFrame implements AppEventListener {
         tree.setCellRenderer(new MethodRenderer());
         
         // Update call graph with the current zoom settings.
-        getCallGraphPanel().setSnapshot(sn);
+        getCallGraphPanel().setSnapshot(snapshot);
         getCallGraphPanel().applyNCut(ncutSlider.getValue());
     }
 

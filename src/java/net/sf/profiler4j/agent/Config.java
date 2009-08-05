@@ -45,7 +45,7 @@ public class Config {
     private int port = 7890;
     private boolean exitVmOnFailure = true;
     private boolean waitConnection = true;
-    private boolean saveSnapshotOnExit;
+    private boolean saveSnapshotOnExit = false;
     private static File tempDir;
     private boolean dumpClasses = false;
     private String password = null;
