@@ -24,4 +24,27 @@ us. Visit the support forum (hosted by sourceforge). Also, let us know if Profil
 was useful to you and help us to improve it.
 ]]>
    </tip>
+
+   <tip>
+<![CDATA[<h1>Dump on Exit</h1>
+The agent can be configured to dump a snapshot right before your profiled application
+shuts down.
+]]>
+   </tip>
+
+   <tip>
+<![CDATA[<h1>Automatic Callgraph Dump</h1>
+You can have Profiler4j automatically dump the callgraph as a picture on each
+snapshot. This way you can quickly click through your profiling scenarios, taking
+snapshots when appropriate without worrying about taking screen shots or the like.
+]]>
+   </tip>
+
+   <tip>
+<![CDATA[<h1>Select predecessors/successors in callgraph</h1>
+Using shift + left/right arrows you can extend the selection of a node in the call graph.
+This way you can easily follow a chain of method calls.
+(If you like this one, try shift + pos1/end. :))
+]]>
+   </tip>
 </tip-collection>
