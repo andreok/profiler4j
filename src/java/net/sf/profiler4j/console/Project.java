@@ -28,9 +28,7 @@ import org.apache.commons.lang.SystemUtils;
 public class Project {
 
     /** Specifies that test classes from the profiler4j project are to be instrumented and profiled. */
-//    private static final Rule RULE__ACCEPT_PROFILER4J_TEST_CLASSES = new Rule("net.sf.profiler4j.test.*(*)", Rule.Action.ACCEPT);
-    // TODO (mk) remove me on project finish
-    private static final Rule RULE__ACCEPT_PROFILER4J_TEST_CLASSES = new Rule("org.gudy.azureus2.ui.*(*)", Rule.Action.ACCEPT);
+    private static final Rule RULE__ACCEPT_PROFILER4J_TEST_CLASSES = new Rule("net.sf.profiler4j.test.*(*)", Rule.Action.ACCEPT);
     private final static String EXPORT_PATTERN_DEFAULT = SystemUtils.getUserHome() + SystemUtils.FILE_SEPARATOR + "profiler4j_%i.png"; 
 
     private boolean changed;
