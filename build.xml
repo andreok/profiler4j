@@ -17,7 +17,7 @@
 
 <project name="profiler4j" default="build" basedir=".">
 
-    <property name="version" value="1.0-alpha3-build1" />
+    <property name="version" value="1.0-alpha3-build2" />
     <property name="name" value="profiler4j-fork" />
 
     <property name="asmlib" value="lib/asm-all-3.0_RC1.jar" />
@@ -57,7 +57,7 @@
         <jarjar jarfile="${deploy.dir}/agent.jar"
                 basedir="target/classes"
                 index="yes"
-                includes="net/sf/profiler4j/agent/**/*.*">
+                includes="net/sf/profiler4j/agent/**/*.*,net/sf/profiler4j/commons/**/*.*">
             <manifest>
                 <attribute name="Premain-Class"
                            value="net.sf.profiler4j.agent.Agent" />
@@ -65,6 +65,7 @@
                 <attribute name="Can-Redefine-Classes" value="true" />
             </manifest>
             <zipfileset src="lib/asm-all-3.0_RC1.jar" />
+            <zipfileset src="lib/xstream-1.3.1.jar" />
             <rule pattern="org.objectweb.asm.**"
                   result="net.sf.profiler4j.agent.asm.@1" />
         </jarjar>

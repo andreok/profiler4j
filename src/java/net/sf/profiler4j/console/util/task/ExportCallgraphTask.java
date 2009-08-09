@@ -19,11 +19,11 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import net.sf.profiler4j.commons.Snapshot;
 import net.sf.profiler4j.console.CallGraphPanel;
 import net.sf.profiler4j.console.Console;
 import net.sf.profiler4j.console.MainFrame;
 import net.sf.profiler4j.console.Project;
-import net.sf.profiler4j.console.client.Snapshot;
 import net.sf.profiler4j.console.util.export.FilenameGenerator;
 import net.sf.profiler4j.console.util.export.ImageFileWriter;
 import net.sf.profiler4j.console.util.export.ToPng;

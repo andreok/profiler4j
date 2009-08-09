@@ -66,9 +66,9 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import net.sf.profiler4j.agent.AgentConstants;
+import net.sf.profiler4j.commons.Snapshot;
 import net.sf.profiler4j.console.TreeBuilder.NodeInfo;
 import net.sf.profiler4j.console.client.ClientException;
-import net.sf.profiler4j.console.client.Snapshot;
 import net.sf.profiler4j.console.util.export.ImageFileWriter;
 import net.sf.profiler4j.console.util.export.ImageTransferable;
 import net.sf.profiler4j.console.util.export.ToPng;

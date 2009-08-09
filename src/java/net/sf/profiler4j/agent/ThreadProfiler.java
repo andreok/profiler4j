@@ -14,13 +14,19 @@
 package net.sf.profiler4j.agent;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.thoughtworks.xstream.core.TreeMarshaller.CircularReferenceException;
+
 import net.sf.profiler4j.agent.CFlow.ThreadLocalMethod;
+import net.sf.profiler4j.commons.Snapshot;
 
 /**
  * The class <code>ThreadProfiler</code> is responsible for measuring the time spent in
@@ -364,6 +370,38 @@ public class ThreadProfiler {
             DataOutputStream dos = new DataOutputStream(bos);
             serialize(dos, methods_);
             dos.flush();
+        }
+    }
+
+    /**
+     * Simulates a binary transfer of snapshot information to create
+     * a new Snapshot.
+     */
+    public static Snapshot createSnapshot() throws IOException {
+        MethodGroup[] methods_ = null;
+        synchronized (globalLock) {
+            // Gather all necessary information.
+            methods_ = new MethodGroup[methodCount];
+            for (int i = 0; i < methodCount; i++) {
+                methods_[i] = new MethodGroup(globalMethods[i]);
+            }
+            for (ThreadProfiler ti : globalThreadInfos.values()) {
+                if (ti.thread.isAlive()) {
+                    exitWholeStack(ti, methods_);
+                }
+            }
+            
+            // Serialize the snapshot to a in-memory-stream.
+            
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            BufferedOutputStream bos = new BufferedOutputStream(os);
+            DataOutputStream dos = new DataOutputStream(bos);
+            serialize(dos, methods_);
+            dos.flush();
+            
+            // Deserialize it using the Snapshot internal method.
+            InputStream is = new ByteArrayInputStream(os.toByteArray());
+            return Snapshot.read(is);
         }
     }
 

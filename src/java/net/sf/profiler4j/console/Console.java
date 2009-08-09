@@ -34,10 +34,10 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
 import net.sf.profiler4j.agent.AgentConstants;
+import net.sf.profiler4j.commons.Snapshot;
 import net.sf.profiler4j.console.client.Client;
 import net.sf.profiler4j.console.client.ClientException;
 import net.sf.profiler4j.console.client.ProgressCallback;
-import net.sf.profiler4j.console.client.Snapshot;
 import net.sf.profiler4j.console.util.task.ExportCallgraphTask;
 import net.sf.profiler4j.console.util.task.LongTask;
 import net.sf.profiler4j.console.util.task.LongTaskExecutorDialog;
@@ -65,8 +65,6 @@ public class Console {
     private static final String PROJECT_XML_ATTRIBUTE__PATTERN = "pattern";
 
     private static final String PROJECT_XML_ELEMENT__EXPORT_PATTERN = "export";
-
-    private static final Log log = LogFactory.getLog(Console.class);
 
     private Client client;
     private Project project;

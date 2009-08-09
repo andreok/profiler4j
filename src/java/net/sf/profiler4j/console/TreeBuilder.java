@@ -31,8 +31,8 @@ import java.util.Stack;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import net.sf.profiler4j.agent.SnapshotUtil;
-import net.sf.profiler4j.console.client.Snapshot;
-import net.sf.profiler4j.console.client.Snapshot.Method;
+import net.sf.profiler4j.commons.Snapshot;
+import net.sf.profiler4j.commons.Snapshot.Method;
 
 /**
  * Class responsible for creating a tree that represents all call contexts from root methods.

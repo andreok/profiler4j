@@ -51,8 +51,8 @@ import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 import javax.swing.JComboBox.KeySelectionManager;
 
-import net.sf.profiler4j.console.client.Snapshot;
-import net.sf.profiler4j.console.client.Snapshot.Method;
+import net.sf.profiler4j.commons.Snapshot;
+import net.sf.profiler4j.commons.Snapshot.Method;
 import net.sf.profiler4j.console.util.hover.HoverManager;
 import net.sf.profiler4j.console.util.hover.HoverablePanel;
 
@@ -132,7 +132,6 @@ public class CallGraphPanel extends HoverablePanel {
                 repaint();
             }
             requestFocus();
-            System.out.println(e.getPoint());
         }
 
         @Override

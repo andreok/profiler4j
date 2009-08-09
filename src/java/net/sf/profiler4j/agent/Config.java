@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang.Validate;
+
 import net.sf.profiler4j.agent.Rule.Option;
 
 /**
@@ -45,13 +49,21 @@ public class Config {
     private int port = 7890;
     private boolean exitVmOnFailure = true;
     private boolean waitConnection = true;
+    
+    /** If to dump a snapshot in binary format on exit. */
     private boolean saveSnapshotOnExit = false;
+    
     private static File tempDir;
     private boolean dumpClasses = false;
     private String password = null;
     private File dumpDir;
     private String[] exclusions;
     private int sessionVersion;
+    
+    /** If to dump a snapshot in XML format right before exiting. */ 
+    private boolean takeSnapshotOnExit = false;
+    /** The path where to dump the XML encoded snapshot. */
+    private String finalSnapshotPath = System.getProperty("user.home") + File.separator + "snapshotOnExit.p4j-snapshot";
 
     // //////////////////////////////////////////////////////////////////////////
     // Constructor
@@ -104,6 +116,11 @@ public class Config {
                 enabled = Boolean.parseBoolean(value);
             } else if ("password".equals(key)) {
                 password = value;
+            } else if ("snapshotOnExit".equals(key)) {
+                takeSnapshotOnExit = true;
+                if (null != value)
+                    finalSnapshotPath = value;
+                verifyPath_orThrowException(finalSnapshotPath);
             } else {
                 throw new Profiler4JError("Invalid agent option '" + key + "'");
             }
@@ -193,6 +210,44 @@ public class Config {
     public Map<Option, String> getDefaultRuleOptions() {
         return this.defaultRuleOptions;
     }
+    
+    /**
+     * Verifies the given path can be used to open a file and write to it.
+     * <p>
+     * In case this is not possible, an exception is thrown.
+     * 
+     * @param pathToSnapshot the path to check
+     */
+    public void verifyPath_orThrowException(String pathToSnapshot) {
+        // Could be shorter with apache.commmons but decided against
+        // including more libraries in the agent, which should be as
+        // tiny as reasonable.
+        if (null == pathToSnapshot || pathToSnapshot.isEmpty())
+            throw new Profiler4JError("File path for snapshotOnExit feature is empty.");
+        
+        File file = new File(pathToSnapshot);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch(IOException e) {
+                throw new Profiler4JError("Could not create a file for the snapshotOnExit feature: " + pathToSnapshot);
+            } finally {
+            file.delete();
+            }
+        } else {
+            // File?
+            if (!file.isFile() || !file.canWrite())
+                throw new Profiler4JError("Cannot open file for snapshotOnExit feature: " + pathToSnapshot);
+        }
+        
+        
+    }
+    
+    
+    
+    /*****************************************************************
+     * PROPERTIES
+     */
 
     /**
      * @return Returns the dumpClasses.
@@ -268,4 +323,30 @@ public class Config {
         return this.waitConnection;
     }
 
+    /**
+     * If the user has requested that a snapshot be dumped before exiting the
+     * agent, i.e. before the program closes down completely. If so,
+     * the path can be retrieved via {@link #getFinalSnapshotPath()} and is
+     * guaranteed to have been meaningful, when the configuration was read.
+     * 
+     * @return {@code true} in case a snapshot is wanted, {@code false} otherwise.
+     */
+    public boolean isTakeSnapshotOnExit() {
+        return this.takeSnapshotOnExit;
+    }
+
+    /**
+     * The path to where to dump the final snapshot as XML.
+     * <p>
+     * If {@link #isTakeSnapshotOnExit()} returns {@code true}, the return
+     * value is guaranteed to be non-{@code null}. Otherwise the return value
+     * is undefined.
+     * 
+     * @return the file path for the snapshot 
+     */
+    public String getFinalSnapshotPath() {
+        return this.finalSnapshotPath;
+    }
+
+    
 }

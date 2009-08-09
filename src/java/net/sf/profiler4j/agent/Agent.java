@@ -18,6 +18,7 @@ import static net.sf.profiler4j.agent.AgentConstants.VERSION;
 import static net.sf.profiler4j.agent.Log.print;
 import static net.sf.profiler4j.agent.ThreadProfiler.globalLock;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.GarbageCollectorMXBean;
@@ -29,6 +30,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
  * Class responsible for the intialization of the agent.
@@ -109,6 +113,9 @@ public class Agent {
                         BytecodeTransformer.enabled = false;
                         if (config.isSaveSnapshotOnExit()) {
                             SnapshotUtil.saveSnapshot();
+                        }
+                        if (config.isTakeSnapshotOnExit()) {
+                            SnapshotUtil.saveSnapshotToXML(config.getFinalSnapshotPath());
                         }
                         ClassUtil.releaseLock();
                         print(0, "Profiler stopped");

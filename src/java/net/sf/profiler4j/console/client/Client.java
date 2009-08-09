@@ -22,6 +22,7 @@ import java.net.Socket;
 
 import net.sf.profiler4j.agent.AgentConstants;
 import net.sf.profiler4j.agent.ThreadInfo;
+import net.sf.profiler4j.commons.Snapshot;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
