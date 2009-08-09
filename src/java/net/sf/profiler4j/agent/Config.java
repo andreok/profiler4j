@@ -222,7 +222,7 @@ public class Config {
         // Could be shorter with apache.commmons but decided against
         // including more libraries in the agent, which should be as
         // tiny as reasonable.
-        if (null == pathToSnapshot || pathToSnapshot.isEmpty())
+        if (null == pathToSnapshot || 0 == pathToSnapshot.length())
             throw new Profiler4JError("File path for snapshotOnExit feature is empty.");
         
         File file = new File(pathToSnapshot);
