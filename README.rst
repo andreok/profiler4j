@@ -19,6 +19,7 @@ FORK CHANGELOG (excerpt)
 1.0-alpha3 (not officially released)
 	- NEW: Export options in project settings get saved/loaded, too.
 	- NEW: Snapshots can now be saved and loaded via the File menu.
+	- NEW: Agent can be configured to dump a snapshot to file before exiting.
 
 1.0-alpha2
 	- NEW: Automatically exported call graphs are always at maximum level of detail
