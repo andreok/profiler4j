@@ -2,7 +2,7 @@
 Profiler4j Fork
 ===============
 
-Profiler4j Fork is, intuitively clear, a fork of the `original Profiler4j <http://profiler4j.sourceforge.net/>`_. I've begun it to enhance the already very useful and handy tool at some points.
+Profiler4j Fork is, intuitively clear, a fork of the `original Profiler4j <http://profiler4j.sourceforge.net/>`_. I've begun it to enhance this already very useful and handy tool by Antonio S. R. Gomes.
 
 The project is now finished, since all issues, which I wanted to add, have been added. For more information, please see the documentation below.
 
