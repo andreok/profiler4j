@@ -289,29 +289,99 @@ ul.auto-toc {
 
 <p>Profiler4j Fork is, intuitively clear, a fork of the <a class="reference external" href="http://profiler4j.sourceforge.net/">original Profiler4j</a>. I've begun it to enhance the already very useful and handy tool at some points.</p>
 <p>The project is now finished, since all issues, which I wanted to add, have been added. For more information, please see the documentation below.</p>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#license" id="id1">License</a></li>
+<li><a class="reference internal" href="#download" id="id2">Download</a></li>
+<li><a class="reference internal" href="#documentation" id="id3">Documentation</a><ul>
+<li><a class="reference internal" href="#call-graph" id="id4">Call Graph</a><ul>
+<li><a class="reference internal" href="#spread-selections" id="id5">Spread selections</a></li>
+<li><a class="reference internal" href="#export-to-file" id="id6">Export to file</a></li>
+<li><a class="reference internal" href="#export-automatically" id="id7">Export automatically</a></li>
+<li><a class="reference internal" href="#copy-to-clipboard" id="id8">Copy to clipboard</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#snapshot" id="id9">Snapshot</a><ul>
+<li><a class="reference internal" href="#load-save" id="id10">Load/Save</a></li>
+<li><a class="reference internal" href="#save-on-exit" id="id11">Save on Exit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
 <div class="section" id="license">
-<h1>License</h1>
+<h1><a class="toc-backref" href="#id1">License</a></h1>
 <p>As the original project, the fork is available under a <a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0.txt">APACHE LICENSE v2.0</a></p>
 </div>
 <div class="section" id="download">
-<h1>Download</h1>
+<h1><a class="toc-backref" href="#id2">Download</a></h1>
 <p>Both the source code and the binaries of the fork are available from the <a class="reference external" href="http://github.com/jmc7479/profiler4j/downloads">download section</a> of the <a class="reference external" href="http://github.com/jmc7479/profiler4j">project page</a> at <a class="reference external" href="http://github.com/">github</a>.</p>
 <p>For the downloads of the original project, see <a class="reference external" href="http://sourceforge.net/projects/profiler4j/files/profiler4j/">its download section</a>.</p>
 </div>
 <div class="section" id="documentation">
-<h1>Documentation</h1>
+<h1><a class="toc-backref" href="#id3">Documentation</a></h1>
+<p>Here, all features that have been added in the forked program, are documented.</p>
 <p>For information on how to use the profiler and on any of the original features, please see the <a class="reference external" href="http://profiler4j.sourceforge.net/">official Profiler4j page</a> at sourceforge.</p>
 <div class="section" id="call-graph">
-<h2>Call Graph</h2>
-<p>The call graph can now be easily exported to a PNG image file. This can happen manually, or automatically on each snapshot.</p>
+<h2><a class="toc-backref" href="#id4">Call Graph</a></h2>
+<p>In the call graph, you can select a node and spread this direction either upwards or downwards the call chain. Also, the call graph can now be easily exported to a PNG image file. This can happen manually, or automatically on each snapshot.</p>
+<div class="section" id="spread-selections">
+<h3><a class="toc-backref" href="#id5">Spread selections</a></h3>
+<p>Starting from a given method, you can follow down (or up) its call chain in order to see which method are called indirectly.</p>
+<p>To do this, select a node in the call graph by clicking on it.</p>
+<img alt="images/selection-1.png" src="images/selection-1.png" />
+<p>Then, press <strong>[shift] + [right-arrow]</strong> together. Now all nodes that represent methods that have been called by the selected one, are also selected.</p>
+<img alt="images/selection-2.png" src="images/selection-2.png" />
+<p>Repeat this, until the entire call stack has been selected. Shortcut: Press <strong>[shift] + [End]</strong></p>
+<img alt="images/selection-end.png" src="images/selection-end.png" />
+<p>This also works in the other direction with <strong>[shift] + [left-arrow]</strong> and <strong>[shift] + [Pos1]</strong> respectively.</p>
+</div>
 <div class="section" id="export-to-file">
-<h3>Export to file</h3>
+<h3><a class="toc-backref" href="#id6">Export to file</a></h3>
+<p>To export the currently shown call graph, note the new &quot;Export&quot; menu.</p>
+<img alt="images/export-menu.png" src="images/export-menu.png" />
+<p>Simply select its &quot;Call graph...&quot; entry, choose where to save the image and confirm. Done.</p>
 </div>
 <div class="section" id="export-automatically">
-<h3>Export automatically</h3>
+<h3><a class="toc-backref" href="#id7">Export automatically</a></h3>
+<p>You can also export the call graph each time you take a snapshot. Note, that in this case, the image will always reflect the call graph at its maximum level of detail.</p>
+<p>To enable this feature, open the project details using the pen button <img alt="pen" src="images/project-details-button.png" /> in the button bar. In the section &quot;Automatic Export&quot;, make sure the checkbox is checked.</p>
+<img alt="images/project-details.png" src="images/project-details.png" />
+<p>Then, you may specify a filename pattern, which determines to which file the call graph is saved each time a snapshot is taken (see below). Confirm with &quot;Ok&quot; and be done. There is no need to apply the rules for the export feature to take effect, since the rules haven't changed. Now, each time you press the snapshot button, the call graph is exported.</p>
+<p>For the pattern are two possibilities here. If you are only interested in the <em>most recent</em> picture, you can simply specify a full path to a file, either existing or not. For example, &quot;/home/joe/latest.p4j-snapshot&quot; would do.</p>
+<p>On the other hand, if you want to inspect <em>every</em> of the exported call graphs, then in addition to the full path you must use the place holder token &quot;%i&quot; in the file name. Each time a snapshot is taken, the place holder is substituted with the next higher number. For example, using the pattern &quot;/home/joe/callgraph-%i.png&quot;, the generated filenames would be &quot;callgraph-1.png&quot;, &quot;callgraph-2.png&quot; and so on.</p>
+<p>Note that the place holder always starts at the highest used number. So, in the previous example, if there had been a file &quot;callgraph-82.png&quot;, then the next file would be named &quot;callgraph-83.png&quot;.</p>
 </div>
 <div class="section" id="copy-to-clipboard">
-<h3>Copy to clipboard</h3>
+<h3><a class="toc-backref" href="#id8">Copy to clipboard</a></h3>
+<p>You can also export the current call graph to the clip board. For this, simply use the &quot;Copy&quot; button at the top-right corner of the call graph view. Again, the call graph is exported in the PNG image format.</p>
+</div>
+</div>
+<div class="section" id="snapshot">
+<h2><a class="toc-backref" href="#id9">Snapshot</a></h2>
+<p>Snapshots can now be loaded and saved. Additionally, the agent can be configured to dump a snapshot right before the application closes down.</p>
+<div class="section" id="load-save">
+<h3><a class="toc-backref" href="#id10">Load/Save</a></h3>
+<p>In order to save the currently taken snapshot, or in order to load a previous one, simply use the corresponding items in the &quot;File&quot; menu.</p>
+</div>
+<div class="section" id="save-on-exit">
+<h3><a class="toc-backref" href="#id11">Save on Exit</a></h3>
+<p>The agent can be configured to save the current snapshot to disk right before exiting. This is particularly helpful for a number of reasons:</p>
+<ul class="simple">
+<li>You can reset the statistics before exiting and profile only the <em>shut down process</em> of your application. (If you're interested in it.)</li>
+<li>Since the application might be closing down real fast, there is no clever way to time this manually.</li>
+<li>One might want to profile not only a particular situation, but a complete session. In this case, the option helps since you don't forget to take a snapshot. :)</li>
+</ul>
+<p>In order to enable this feature, add the &quot;snapshotOnExit&quot; argument to the agent's parameters. For example, let's assume your javaagent argument to your profiled application looked like this:</p>
+<p><tt class="docutils literal"><span class="pre">-javaagent:&quot;/home/joe/profiler4j-fork-1.0/agent.jar&quot;</span></tt></p>
+<p>It now must look like so:</p>
+<p><tt class="docutils literal"><span class="pre">-javaagent:&quot;/home/joe/profiler4j-fork-1.0/agent.jar&quot;=snapshotOnExit</span></tt></p>
+<p>By default, the snapshot gets exported in your user's home directory to a file named &quot;snapshotOnExit.p4j-snapshot&quot;. If you want to specify a different file, do so by adding the path as an argument to the option:</p>
+<p><tt class="docutils literal"><span class="pre">-javaagent:&quot;/home/joe/profiler4j-fork-1.0/agent.jar&quot;=snapshotOnExit=/home/joe/on-exit.p4j-snapshot</span></tt></p>
+<p>A snapshot dumped this way, can be opened as any other.</p>
+<p>Last updated: 2009-08-09.</p>
 </div>
 </div>
 </div>
