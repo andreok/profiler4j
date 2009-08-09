@@ -294,17 +294,18 @@ ul.auto-toc {
 <ul class="simple">
 <li><a class="reference internal" href="#license" id="id1">License</a></li>
 <li><a class="reference internal" href="#download" id="id2">Download</a></li>
-<li><a class="reference internal" href="#documentation" id="id3">Documentation</a><ul>
-<li><a class="reference internal" href="#call-graph" id="id4">Call Graph</a><ul>
-<li><a class="reference internal" href="#spread-selections" id="id5">Spread selections</a></li>
-<li><a class="reference internal" href="#export-to-file" id="id6">Export to file</a></li>
-<li><a class="reference internal" href="#export-automatically" id="id7">Export automatically</a></li>
-<li><a class="reference internal" href="#copy-to-clipboard" id="id8">Copy to clipboard</a></li>
+<li><a class="reference internal" href="#changes" id="id3">Changes</a></li>
+<li><a class="reference internal" href="#documentation" id="id4">Documentation</a><ul>
+<li><a class="reference internal" href="#call-graph" id="id5">Call Graph</a><ul>
+<li><a class="reference internal" href="#spread-selections" id="id6">Spread selections</a></li>
+<li><a class="reference internal" href="#export-to-file" id="id7">Export to file</a></li>
+<li><a class="reference internal" href="#export-automatically" id="id8">Export automatically</a></li>
+<li><a class="reference internal" href="#copy-to-clipboard" id="id9">Copy to clipboard</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#snapshot" id="id9">Snapshot</a><ul>
-<li><a class="reference internal" href="#load-save" id="id10">Load/Save</a></li>
-<li><a class="reference internal" href="#save-on-exit" id="id11">Save on Exit</a></li>
+<li><a class="reference internal" href="#snapshot" id="id10">Snapshot</a><ul>
+<li><a class="reference internal" href="#load-save" id="id11">Load/Save</a></li>
+<li><a class="reference internal" href="#save-on-exit" id="id12">Save on Exit</a></li>
 </ul>
 </li>
 </ul>
@@ -320,15 +321,34 @@ ul.auto-toc {
 <p>Both the source code and the binaries of the fork are available from the <a class="reference external" href="http://github.com/jmc7479/profiler4j/downloads">download section</a> of the <a class="reference external" href="http://github.com/jmc7479/profiler4j">project page</a> at <a class="reference external" href="http://github.com/">github</a>.</p>
 <p>For the downloads of the original project, see <a class="reference external" href="http://sourceforge.net/projects/profiler4j/files/profiler4j/">its download section</a>.</p>
 </div>
+<div class="section" id="changes">
+<h1><a class="toc-backref" href="#id3">Changes</a></h1>
+<p>Changes done in the fork</p>
+<ul class="simple">
+<li>Obviously, lots of changes in the Java Code.</li>
+<li>Added a few tips to explain the new features.</li>
+<li>Added libraries:<ul>
+<li>Apache Commons library &quot;lang&quot; in version 2.4, <a class="reference external" href="http://commons.apache.org/lang/">http://commons.apache.org/lang/</a><ul>
+<li>only needed by the console</li>
+</ul>
+</li>
+<li>XStream 1.3.1, <a class="reference external" href="http://xstream.codehaus.org/">http://xstream.codehaus.org/</a><ul>
+<li>needed by both the console and the agent to dump snapshots</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
 <div class="section" id="documentation">
-<h1><a class="toc-backref" href="#id3">Documentation</a></h1>
+<h1><a class="toc-backref" href="#id4">Documentation</a></h1>
 <p>Here, all features that have been added in the forked program, are documented.</p>
 <p>For information on how to use the profiler and on any of the original features, please see the <a class="reference external" href="http://profiler4j.sourceforge.net/">official Profiler4j page</a> at sourceforge.</p>
 <div class="section" id="call-graph">
-<h2><a class="toc-backref" href="#id4">Call Graph</a></h2>
+<h2><a class="toc-backref" href="#id5">Call Graph</a></h2>
 <p>In the call graph, you can select a node and spread this direction either upwards or downwards the call chain. Also, the call graph can now be easily exported to a PNG image file. This can happen manually, or automatically on each snapshot.</p>
 <div class="section" id="spread-selections">
-<h3><a class="toc-backref" href="#id5">Spread selections</a></h3>
+<h3><a class="toc-backref" href="#id6">Spread selections</a></h3>
 <p>Starting from a given method, you can follow down (or up) its call chain in order to see which method are called indirectly.</p>
 <p>To do this, select a node in the call graph by clicking on it.</p>
 <img alt="images/selection-1.png" src="images/selection-1.png" />
@@ -339,13 +359,13 @@ ul.auto-toc {
 <p>This also works in the other direction with <strong>[shift] + [left-arrow]</strong> and <strong>[shift] + [Pos1]</strong> respectively.</p>
 </div>
 <div class="section" id="export-to-file">
-<h3><a class="toc-backref" href="#id6">Export to file</a></h3>
+<h3><a class="toc-backref" href="#id7">Export to file</a></h3>
 <p>To export the currently shown call graph, note the new &quot;Export&quot; menu.</p>
 <img alt="images/export-menu.png" src="images/export-menu.png" />
 <p>Simply select its &quot;Call graph...&quot; entry, choose where to save the image and confirm. Done.</p>
 </div>
 <div class="section" id="export-automatically">
-<h3><a class="toc-backref" href="#id7">Export automatically</a></h3>
+<h3><a class="toc-backref" href="#id8">Export automatically</a></h3>
 <p>You can also export the call graph each time you take a snapshot. Note, that in this case, the image will always reflect the call graph at its maximum level of detail.</p>
 <p>To enable this feature, open the project details using the pen button <img alt="pen" src="images/project-details-button.png" /> in the button bar. In the section &quot;Automatic Export&quot;, make sure the checkbox is checked.</p>
 <img alt="images/project-details.png" src="images/project-details.png" />
@@ -355,19 +375,19 @@ ul.auto-toc {
 <p>Note that the place holder always starts at the highest used number. So, in the previous example, if there had been a file &quot;callgraph-82.png&quot;, then the next file would be named &quot;callgraph-83.png&quot;.</p>
 </div>
 <div class="section" id="copy-to-clipboard">
-<h3><a class="toc-backref" href="#id8">Copy to clipboard</a></h3>
+<h3><a class="toc-backref" href="#id9">Copy to clipboard</a></h3>
 <p>You can also export the current call graph to the clip board. For this, simply use the &quot;Copy&quot; button at the top-right corner of the call graph view. Again, the call graph is exported in the PNG image format.</p>
 </div>
 </div>
 <div class="section" id="snapshot">
-<h2><a class="toc-backref" href="#id9">Snapshot</a></h2>
+<h2><a class="toc-backref" href="#id10">Snapshot</a></h2>
 <p>Snapshots can now be loaded and saved. Additionally, the agent can be configured to dump a snapshot right before the application closes down.</p>
 <div class="section" id="load-save">
-<h3><a class="toc-backref" href="#id10">Load/Save</a></h3>
+<h3><a class="toc-backref" href="#id11">Load/Save</a></h3>
 <p>In order to save the currently taken snapshot, or in order to load a previous one, simply use the corresponding items in the &quot;File&quot; menu.</p>
 </div>
 <div class="section" id="save-on-exit">
-<h3><a class="toc-backref" href="#id11">Save on Exit</a></h3>
+<h3><a class="toc-backref" href="#id12">Save on Exit</a></h3>
 <p>The agent can be configured to save the current snapshot to disk right before exiting. This is particularly helpful for a number of reasons:</p>
 <ul class="simple">
 <li>You can reset the statistics before exiting and profile only the <em>shut down process</em> of your application. (If you're interested in it.)</li>

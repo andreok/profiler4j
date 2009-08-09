@@ -20,6 +20,22 @@ Both the source code and the binaries of the fork are available from the `downlo
 
 For the downloads of the original project, see `its download section <http://sourceforge.net/projects/profiler4j/files/profiler4j/>`_.
 
+Changes
+#######
+Where changes have been made during the fork project in respect to the original:
+
+- Obviously, lots of changes in the Java Code.
+- Added a few tips to explain the new features.
+- Added libraries:
+
+  - Apache Commons library "lang" in version 2.4, http://commons.apache.org/lang/
+
+    - only needed by the console
+
+  - XStream 1.3.1, http://xstream.codehaus.org/
+
+    - needed by both the console and the agent to dump snapshots
+
 Documentation
 #############
 
