@@ -1,32 +1,6 @@
 This project is a fork of the official Profiler4j project by Antonio S. R. Gomes.
 You can find it at sourceforge: http://profiler4j.sourceforge.net/
 
-I've created this fork to add one or two features. Some have already been implemented,
-see the changelog excerpt below.
+I've created this fork to add one or two features. They have been added and this project is done. For full documentation, see the `project's page <http://jmc7479.github.com/profiler4j/>`_ at github.
 
-Basically, what I want:
-- Save/load functionality for snapshots.
-- Exporting the call graph as a picture.
-- Have each call graph dumped to disk automatically when taking a snapshot.
-This helps when profiling many small pieces of a workflow.
-
-Maybe I'll even implement some of those goals.
-
-------------------------
-
-FORK CHANGELOG (excerpt)
-
-1.0-alpha3 (not officially released)
-	- NEW: Export options in project settings get saved/loaded, too.
-	- NEW: Snapshots can now be saved and loaded via the File menu.
-	- NEW: Agent can be configured to dump a snapshot to file before exiting.
-
-1.0-alpha2
-	- NEW: Automatically exported call graphs are always at maximum level of detail
-	- NEW: Using SHIFT + left/right or home/end, the marking of nodes can be spread.
-	- BUG: "Remote Command Monitor" hides on close and is disposed of, when done. (It used to stay open sometimes, hope this is fixed now.)
-
-1.0-alpha1
-	- NEW: Currently shown call graph may be saved as PNG image via export-menu
-	- NEW: Project setting: After each snapshot, the callgraph is exported automatically.
-	- NEW: The call graph may be copied to clip board.
+For the sources to the documentation, check out the "gh-pages" branch.

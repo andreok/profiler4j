@@ -65,6 +65,8 @@ public class Console {
     private static final String PROJECT_XML_ATTRIBUTE__PATTERN = "pattern";
 
     private static final String PROJECT_XML_ELEMENT__EXPORT_PATTERN = "export";
+    
+    public static final String SNAPSHOT_EXTENSION = ".p4j-snapshot";
 
     private Client client;
     private Project project;

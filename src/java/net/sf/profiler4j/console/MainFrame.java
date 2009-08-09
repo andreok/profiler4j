@@ -126,13 +126,13 @@ public class MainFrame extends JFrame implements AppEventListener {
         public boolean accept(File f) {
             return f.isDirectory()
                 || f.exists()
-                && (   f.getName().endsWith(".p4j-snapshot")
+                && (   f.getName().endsWith(Console.SNAPSHOT_EXTENSION)
                    );
         }
 
         @Override
         public String getDescription() {
-            return "Profiler4j-Snapshots (.p4j-snapshot)";
+            return "Profiler4j-Snapshots (*" + Console.SNAPSHOT_EXTENSION + ")";
         }
     };
 
@@ -319,8 +319,18 @@ public class MainFrame extends JFrame implements AppEventListener {
                     }
                     
                     lastDir = fc.getSelectedFile().getParent();
+                    File selectedFile = fc.getSelectedFile();
                     
-                    app.saveCurrentSnapshotToFile(fc.getSelectedFile());
+                    // Add the default extension, if none is found.
+                    if (!selectedFile.getName().contains(".")) {
+                        try {
+                        selectedFile = new File(selectedFile.getCanonicalPath() + Console.SNAPSHOT_EXTENSION);
+                        } catch(IOException exc) {
+                            // do nothing, there is no point.
+                        }
+                    }
+                    
+                    app.saveCurrentSnapshotToFile(selectedFile);
                     
                 }
             });
